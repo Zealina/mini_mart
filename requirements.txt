@@ -1,3 +1,4 @@
 sqlalchemy
+pymysql
 flask
-gunicorn
+python-dotenv-vault

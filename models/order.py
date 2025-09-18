@@ -11,7 +11,7 @@ class Order(Base, BaseModel):
 
     __tablename__ = "orders"
 
-    user_id = Column(String(128), ForeignKey("users.id"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
     completed = Column(Integer, nullable=False, default=0)
 
     user = relationship("User", back_populates="orders")

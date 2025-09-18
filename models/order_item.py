@@ -11,8 +11,8 @@ class OrderItem(Base, BaseModel):
 
     __tablename__ = "order_items"
 
-    order_id = Column(String(128), ForeignKey("orders.id"), nullable=False)
-    product_id = Column(String(128), ForeignKey("products.id"), nullable=False)
+    order_id = Column(String(36), ForeignKey("orders.id"), nullable=False)
+    product_id = Column(String(36), ForeignKey("products.id"), nullable=False)
     quantity = Column(Integer, nullable=False, default=1)
 
     order = relationship("Order", back_populates="order_items")

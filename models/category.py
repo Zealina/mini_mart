@@ -11,7 +11,7 @@ class Category(Base, BaseModel):
     __tablename__ = "categories"
 
     name = Column(String(128), nullable=False)
-    parent_id = Column(String(128), ForeignKey("categories.id"), nullable=True)
+    parent_id = Column(String(36), ForeignKey("categories.id"), nullable=True)
 
     parent = relationship("Category", remote_side="Category.id", backref="subcategories")
     products = relationship("Product", back_populates="category", cascade="all, delete-orphan")
