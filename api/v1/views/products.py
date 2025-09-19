@@ -43,6 +43,11 @@ def remove_product(product_id):
     return jsonify({"error": "product not found"})
 
 
-@app_views.route('/update/<product_id>', methods['PUT'])
-def update_product(product_id):
+@app_views.route('/update', methods['PUT'])
+def update_product():
     """Update product"""
+    data = request.get_json()
+    res = ProductRepo.update(**data)
+    if not res:
+        return jsonify({"error": "product not found"})
+    return jsonify({"success": "OK"} )
