@@ -1,0 +1,164 @@
+:root {
+  // Font Size
+  --step-n2: clamp(0.6076rem, 0.5407rem + 0.3345vw, 0.8rem);
+  --step-n1: clamp(0.7292rem, 0.635rem + 0.471vw, 1rem);
+  --step-0: clamp(0.875rem, 0.6rem + 0.7vw, 1.15rem);
+  --step-n0: clamp(0.9rem, 0.7rem + 0.8vw, 1.1rem);
+  --step-1: clamp(1.0rem, 0.7rem + 0.77vw, 1.3rem);
+  --step-2: clamp(1.2rem, 1rem + 1vw, 1.7rem);
+  --step-3: clamp(1.45rem, 1.05rem + 1.3vw, 2.1rem);
+  --step-4: clamp(1.7rem, 1.1rem + 1.7vw, 2.8rem);
+  --step-5: clamp(2.75rem, 2.5rem + 2.6vw, 4.7147rem);
+
+  // Spacing
+  --space-3xs: clamp(0.25rem, 0.2283rem + 0.1087vw, 0.3125rem);
+  --space-2xs: clamp(0.4375rem, 0.3723rem + 0.3261vw, 0.625rem);
+  --space-xs: clamp(0.6875rem, 0.6005rem + 0.4348vw, 0.9375rem);
+  --space-s: clamp(0.875rem, 0.7446rem + 0.6522vw, 1.25rem);
+  --space-m: clamp(1.3125rem, 1.1168rem + 0.9783vw, 1.875rem);
+  --space-l: clamp(1.75rem, 1.4891rem + 1.3043vw, 2.5rem);
+  --space-xl: clamp(2.625rem, 2.2337rem + 1.9565vw, 3.75rem);
+  --space-2xl: clamp(3.5rem, 2.9783rem + 2.6087vw, 5rem);
+  --space-3xl: clamp(5.25rem, 4.4674rem + 3.913vw, 7.5rem);
+
+  // Colors
+  --clr-gray-100: hsl(210deg 17% 98%);
+  --clr-gray-200: hsl(210deg 16% 93%);
+  --clr-gray-300: hsl(210deg 14% 89%);
+  --clr-gray-400: hsl(210deg 14% 83%);
+  --clr-gray-500: hsl(210deg 11% 71%);
+  --clr-gray-600: hsl(208deg 7% 46%);
+  --clr-gray-700: hsl(210deg 9% 31%);
+  --clr-gray-800: hsl(210deg 10% 23%);
+  --clr-gray-900: hsl(210deg 11% 21%);
+  --clr-white: hsl(210deg 30% 100%);
+  --clr-black: hsl(0deg 60% 2%);
+
+  --clr-accent: deeppink;
+
+  // Font-Families
+  // TODO: get a font that works
+  --font-sans: 'Sora', system-ui, -apple-system, 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Open Sans', 'Helvetica Neue', sans-serif;
+  --font-display: 'Sora', 'Londrina Solid', 'Comic Sans';
+
+
+  font-size: 16px;
+  accent-color: hsl(178deg 39% 55%);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+}
+
+body {
+  font-size: calc(var(--step-0) * 0.95);
+  font-family: var(--font-sans);
+  background: var(--clr-white);
+  color: var(--clr-black);
+
+  
+}
+
+#root {
+  min-height: 100vh;
+  align-content: start;
+
+  // TODO: remove this line before production 
+  padding-block-end: 5rem;
+
+  &[data-toast] {
+    overflow: hidden;
+    height: 100vh;
+  }
+}
+
+
+
+.sgrid {
+  --c-sgrid-width: var(--sgrid-width, min(75rem, 100% - 2rem));
+  --c-sgrid-offset: var(--sgrid-offset, auto);
+
+  display: grid;
+  grid-template-columns:
+    [sgrid-left-start sgrid-all-start] var(--c-sgrid-offset) // 
+    [sgrid-content-start sgrid-right-start] var(--c-sgrid-width) // 
+    [sgrid-content-end sgrid-left-end] var(--c-sgrid-offset) //
+    [sgrid-right-end sgrid-all-end];
+
+
+  &>* {
+    --c-sgrid-column: var(--sgrid-column, sgrid-content);
+    grid-column: var(--c-sgrid-column);
+  }
+}
+
+
+
+main {
+  --sgrid-column: sgrid-all;
+
+  &>* {
+    --sgrid-column: sgrid-content;
+  }
+}
+
+
+.sr-only {
+  border: 0 !important;
+  clip: rect(1px, 1px, 1px, 1px) !important;
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-clip-path: inset(50%) !important;
+  clip-path: inset(50%) !important;
+  height: 1px !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  position: absolute !important;
+  width: 1px !important;
+  white-space: nowrap !important;
+}
+
+button {
+  cursor: pointer;
+}
+
+input {
+  width: 100%;
+}
+
+img,
+video,
+svg,
+image,
+picture {
+  max-width: 100%;
+}
+
+svg {
+  --c-icon-size: var(--icon-size, 30px);
+  width: var(--c-icon-size);
+}
+
+
+
+[data-btn] {
+  --c-btn-padding: var(--btn-padding, 0.65rem 0.75rem);
+  --c-btn-bg: var(--btn-bg, var(--clr-gray-200));
+  --c-btn-clr: var(--btn-clr, var(--clr-gray-900));
+  --c-btn-border: var(--btn-border, none);
+
+  display: flex;
+  place-content: center;
+  place-items: center;
+  cursor: pointer;
+  padding: var(--c-btn-padding);
+  border: var(--c-btn-border);
+  background: var(--c-btn-bg);
+  color: var(--c-btn-clr);
+
+}

@@ -1,0 +1,29 @@
+// Special Rules for Toggling the Modal
+body {
+    #modal {
+        display: none;
+    }
+
+    &.modal-is-active {
+        overflow: hidden;
+
+        #modal {
+            display: block;
+        }
+    }
+}
+
+
+.c-modal {
+
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    background: hsl(0 0 0 / 30%);
+    backdrop-filter: blur(7px);
+    display: grid;
+
+
+}
