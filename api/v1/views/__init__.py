@@ -9,3 +9,4 @@ from api.v1.views.products import *
 from api.v1.views.users import *
 from api.v1.views.categories import *
 from api.v1.views.orders import *
+from api.v1.views.auth import *

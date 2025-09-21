@@ -4,9 +4,11 @@
 from api.v1.views import app_views
 from flask import jsonify, request
 from repositories.order_repo import OrderRepo
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 @app_views.route('/orders', methods=['GET'])
+@jwt_required()
 def get_all_orders():
     """Return JSON of all orders in db"""
     orders = OrderRepo.all()

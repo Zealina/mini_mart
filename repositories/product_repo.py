@@ -8,25 +8,44 @@ from models.category import Category
 
 class ProductRepo:
     """Repository class to manage product operations"""
+
     @classmethod
     def new(cls, **kwargs) -> Product:
-        """Create and store a new product"""
+        """
+        Create and store a new product.
+
+        Required:
+            - name (str): Name of the product.
+            - price (float): Price of the product.
+            - package_size (str): Size/measurement (e.g. "500ml bottle", "1kg pack").
+        
+        Optional:
+            - brand (str)
+            - description (str)
+            - category_id (str)
+            - stock (int) → defaults to 0
+            - currency (str) → defaults to "NGN"
+            - image_url (str)
+        """
         if not kwargs.get("name"):
-            raise ValueError("Product name is not set")
+            raise ValueError("Product name is required")
         if not kwargs.get("price"):
-            raise ValueError("Product price is not set")
-        if not kwargs.get("volume"):
-            raise ValueError("Prduct volume is not set")
-        if not kwargs.get("category_id"):
-            kwargs['category_id'] = None
+            raise ValueError("Product price is required")
+        if not kwargs.get("package_size"):
+            raise ValueError("Product package_size is required")
+
         product = Product(
-                name=kwargs['name'],
-                volume=kwargs['volume'],
-                category_id=kwargs['category_id'],
-#               price=kwargs['price'],
-                brand=None,
-                description=None
-            )
+            name=kwargs["name"],
+            price=kwargs["price"],
+            package_size=kwargs["package_size"],
+
+            brand=kwargs.get("brand"),
+            description=kwargs.get("description"),
+            category_id=kwargs.get("category_id"),
+            stock=kwargs.get("stock", 0),
+            currency=kwargs.get("currency", "NGN"),
+            image_url=kwargs.get("image_url")
+        )
         product.save()
         return product
 
@@ -67,18 +86,20 @@ class ProductRepo:
         storage.save()
         return True
 
+    @classmethod
     def get_product_by_name(cls, name: str) -> Product | None:
         """Find a product by exact name"""
         return storage.get_by_attr(Product, name=name)
 
+    @classmethod
     def get_products_by_category(cls, category_id: str) -> list[Product]:
         """Retrieve all products in a given category"""
         return storage.get_by_attr(Product, category_id=category_id)
 
-    
+    @classmethod
     def move_product_to_category(cls, product_id: str, new_category_id: str) -> Product | None:
         """Change product's category"""
-        product = cls.get_product_by_id(product_id)
+        product = cls.get(product_id)
         if not product:
             return None
         product.category_id = new_category_id

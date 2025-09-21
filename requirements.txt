@@ -2,3 +2,5 @@ sqlalchemy
 pymysql
 flask
 python-dotenv-vault
+flasgger
+flask-jwt-extended

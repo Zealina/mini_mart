@@ -32,9 +32,8 @@ class Storage:
         self.__engine = create_engine(url)
 
 
-# Uncomment before deploy
-#        if ENV == "test":
-#            Base.metadata.drop_all(self.__engine)
+        if ENV == "test":
+            Base.metadata.drop_all(self.__engine)
 
 
     def add(self, obj):
@@ -96,3 +95,8 @@ class Storage:
     def close(self):
         """call remove() method on the session attribute"""
         self.__session.remove()
+
+
+    def rollback(self):
+        """rollback changes to db"""
+        self.__session.rollback()
