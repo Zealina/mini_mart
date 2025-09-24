@@ -82,8 +82,10 @@ body {
 .sgrid {
   --c-sgrid-width: var(--sgrid-width, min(75rem, 100% - 2rem));
   --c-sgrid-offset: var(--sgrid-offset, auto);
+  --c-sgrid-acontent: var(--sgrid-acontent, start);
 
   display: grid;
+  align-content: var(--c-sgrid-acontent);
   grid-template-columns:
     [sgrid-left-start sgrid-all-start] var(--c-sgrid-offset) // 
     [sgrid-content-start sgrid-right-start] var(--c-sgrid-width) // 

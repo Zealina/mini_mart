@@ -1,39 +1,47 @@
+import { useStore } from "@nanostores/react"
 import { inactivateModal } from "../../../stores/modal"
 import "./index.scss"
+import { $cart, $cartTotal } from "../../../stores/cart"
 
 export default function Cart() {
 
+    const cart = useStore($cart);
+    const cartTotal = useStore($cartTotal);
+
     return <>
-        <section className="cart">
-            <h2 className="cart-title">My Cart (3)</h2>
+        <section className="cart sgrid">
+            <h2 className="cart-title">My Cart ({cart.length})</h2>
             <button className="cart-close" data-btn onClick={inactivateModal}>Close</button>
 
 
-            <dl className="cart-dl">
-                <title>Cart Items and their Prices</title>
-                <div className="cart-field">
-                    <dt className="cart-item">Oranges (2)</dt>
-                    <dd className="cart-price">$10</dd>
-                </div>
+            <div className="cart-main">
 
-                <div className="cart-field">
-                    <dt className="cart-item">Mangos (2)</dt>
-                    <dd className="cart-price">$14</dd>
-                </div>
+                {cart.length ? 
+                <>
+                <dl className="cart-dl">
+                    {
+                        cart.map(cartItem => <>
+                            <div className="cart-field">
+                                <dt className="cart-item">{cartItem.product_name} ({cartItem.count})</dt>
+                                <dd className="cart-price">₦{cartItem.count * cartItem.price}</dd>
+                            </div>
+                        </>)
+                    }
+                    <div className="cart-field">
+                        <dt className="cart-item cart-total">Total</dt>
+                        <dd className="cart-price cart-total">₦{cartTotal}</dd>
+                    </div>
+                </dl>
 
-                <div className="cart-field">
-                    <dt className="cart-item">Bananas (2)</dt>
-                    <dd className="cart-price">$10</dd>
-                </div>
-
-
-                <div className="cart-field">
-                    <dt className="cart-item cart-total">Total</dt>
-                    <dd className="cart-price cart-total">$34</dd>
-                </div>
-            </dl>
-
-            <button className="cart-checkout-btn" data-btn>Go to Checkout</button>
+                <button className="cart-checkout-btn" data-btn>Go to Checkout</button>
+                </>
+                : 
+                <>
+                    <img className="cart-empty-image" src="/assets/empty-cart.svg" alt="Empty Cart" />
+                    <p className="cart-empty-text">Cart is empty! Add items to buy</p>
+                </> }
+                
+            </div>
 
 
 

@@ -4,9 +4,12 @@ import Product from "./components/pages/Product"
 import Modal from "./components/layout/Modal"
 import { $modalIsActive, activateModal } from "./stores/modal"
 import { useStore } from "@nanostores/react"
+import { SignUp } from "./components/pages/SignUp"
+import { $cart } from "./stores/cart"
 
 function App() {
   const modalIsActive = useStore($modalIsActive)
+  const cart = useStore($cart)
 
 
   return (
@@ -42,7 +45,7 @@ function App() {
                 <svg viewBox="0 0 24 24">
                   <use href="#icon-cart"></use>
                 </svg>
-                <span>Cart (0)</span>
+                <span>Cart ({cart.length})</span>
 
               </button> 
             </li>
@@ -51,6 +54,9 @@ function App() {
         </nav>
       </header>
       <main className="main sgrid" aria-hidden={modalIsActive} inert={modalIsActive}>
+
+
+        <SignUp />
 
         <Product />        
 

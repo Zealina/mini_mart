@@ -1,5 +1,7 @@
 import "./index.scss"
 import Cart from "../Cart"
+import LikedProducts from "../LikedProducts"
+import SearchBar from "../SearchBar"
 
 export default function Modal() {
 
@@ -8,6 +10,8 @@ export default function Modal() {
     return <>
         <section className="c-modal" id="modal" aria-hidden="false">
             <Cart />
+            {/* <LikedProducts /> */}
+            {/* <SearchBar /> */}
         </section>
     
     
