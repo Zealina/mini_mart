@@ -5,3 +5,4 @@ python-dotenv-vault
 flasgger
 flask-jwt-extended
 pycodestyle
+pep8

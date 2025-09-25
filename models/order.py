@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from models.base_model import Base, BaseModel
 
 
-class Order(Base, BaseModel):
+class Order(BaseModel, Base):
     """Define an order and its properties"""
 
     __tablename__ = "orders"
@@ -21,5 +21,10 @@ class Order(Base, BaseModel):
         cascade="all, delete-orphan"
     )
 
-    def __repr__(self):
-        return f"<Order(id={self.id}, user_id='{self.user_id}', completed={self.completed})>"
+    def __init__(self, *args, **kwargs):
+        """Initialize the class"""
+        if "completed" in kwargs:
+            self.completed = kwargs.get("completed")
+        else:
+            self.completed = 0
+        super().__init__(*args, **kwargs)
