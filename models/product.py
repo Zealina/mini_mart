@@ -17,7 +17,7 @@ class Product(BaseModel, Base):
     category_id = Column(String(36), ForeignKey("categories.id"),
                          nullable=True)
     stock = Column(Integer, nullable=False, default=0)
-    package_size = Column(String(64), nullable=False)
+    package_size = Column(String(64), nullable=True)
     price = Column(Float, nullable=False)
     currency = Column(String(8), default="NGN")
 

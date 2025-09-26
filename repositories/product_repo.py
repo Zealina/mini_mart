@@ -11,34 +11,16 @@ class ProductRepo:
 
     @classmethod
     def new(cls, **kwargs) -> Product:
-        """
-        Create and store a new product.
-
-        Required:
-            - name (str): Name of the product.
-            - price (float): Price of the product.
-            - package_size (str): Size/measurement (e.g. "500ml bottle", "1kg pack").
-        
-        Optional:
-            - brand (str)
-            - description (str)
-            - category_id (str)
-            - stock (int) → defaults to 0
-            - currency (str) → defaults to "NGN"
-            - image_url (str)
-        """
+        """Create and store a new product"""
         if not kwargs.get("name"):
             raise ValueError("Product name is required")
         if not kwargs.get("price"):
             raise ValueError("Product price is required")
-        if not kwargs.get("package_size"):
-            raise ValueError("Product package_size is required")
 
         product = Product(
             name=kwargs["name"],
             price=kwargs["price"],
-            package_size=kwargs["package_size"],
-
+            package_size=kwargs.get("package_size"),
             brand=kwargs.get("brand"),
             description=kwargs.get("description"),
             category_id=kwargs.get("category_id"),
@@ -91,6 +73,9 @@ class ProductRepo:
     @classmethod
     def get_products_by_category(cls, category_id: str) -> list[Product]:
         """Retrieve all products in a given category"""
+        category = storage.get(Category, category_id)
+        if not category:
+            return False
         return storage.get_by_attr(Product, category_id=category_id)
 
     @classmethod

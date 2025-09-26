@@ -14,36 +14,10 @@ class UserRepo:
 
     @classmethod
     def new(cls, **kwargs) -> User:
-        """
-        Create and store a new user.
-
-        Required fields:
-            - first_name (str)
-            - last_name (str)
-            - username (str, unique)
-            - email (str, unique)
-            - password (str, will be hashed)
-            - whatsapp_number (str, unique, not nullable)
-
-        Optional fields:
-            - other_name (str)
-            - address (str)
-            - phone_number (str)
-            - city (str)
-            - state (str)
-            - country (str)
-            - is_admin (bool)
-
-        Returns:
-            User: The created user instance.
-
-        Raises:
-            ValueError: If required fields are missing.
-        """
+        """Create and store a new user"""
         required_fields = [
             "first_name",
             "last_name",
-            "username",
             "email",
             "password",
             "whatsapp_number",
@@ -55,15 +29,10 @@ class UserRepo:
         user = User(
             first_name=kwargs["first_name"],
             last_name=kwargs["last_name"],
-            other_name=kwargs.get("other_name"),
-            username=kwargs["username"],
             email=kwargs["email"],
             phone_number=kwargs.get("phone_number"),
             whatsapp_number=kwargs["whatsapp_number"],
             address=kwargs.get("address"),
-            city=kwargs.get("city"),
-            state=kwargs.get("state"),
-            country=kwargs.get("country"),
             is_admin=kwargs.get("is_admin", False),
         )
         user.password = kwargs["password"]

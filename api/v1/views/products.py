@@ -125,6 +125,14 @@ def create_product():
         in: formData
         type: string
         description: Product description
+      - name: stock
+        in: formData
+        type: number
+        description: Product stock available
+      - name: category_id
+        in: formData
+        type: string
+        description: Product Category ID
       - name: images
         in: formData
         type: file
@@ -186,10 +194,19 @@ def update_product(product_id):
         in: formData
         type: string
         description: Product description
+      - name: stock
+        in: formData
+        type: number
+        description: Product stock available
+      - name: category_id
+        in: formData
+        type: string
+        description: Product Category ID
       - name: images
         in: formData
         type: file
         description: New image file
+
     responses:
       200:
         description: Product updated successfully
@@ -229,6 +246,29 @@ def update_product(product_id):
     res = ProductRepo.update(product_id, **data)
     return jsonify(res.to_dict()), 200
 
+@app_views.route('/products/category/<category_id>', methods=['GET'])
+def get_products_by_category(category_id):
+    """
+    Get products by category
+    ---
+    tags:
+      - Products
+    parameters:
+      - name: category_id
+        in: path
+        type: string
+        required: true
+        description: The category UUID
+    responses:
+      200:
+        description: Category products retrieved successfully
+      404:
+        description: Category not found
+    """
+    products = ProductRepo.get_products_by_category(category_id)
+    if not products:
+        return jsonify({"error": "category not found"}), 404
+    return jsonify([product.to_dict() for product in products]), 200
 
 @app_views.route('/products/<product_id>', methods=['DELETE'])
 def remove_product(product_id):

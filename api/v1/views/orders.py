@@ -7,11 +7,9 @@ Manages CRUD operations for orders and their items.
 from api.v1.views import app_views
 from flask import jsonify, request
 from repositories.order_repo import OrderRepo
-from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 @app_views.route('/orders', methods=['GET'])
-@jwt_required()
 def get_all_orders():
     """
     Get all orders
@@ -32,7 +30,6 @@ def get_all_orders():
 
 
 @app_views.route('/orders/<order_id>', methods=['GET'])
-@jwt_required()
 def get_order(order_id):
     """
     Get an order by ID
@@ -60,7 +57,6 @@ def get_order(order_id):
 
 
 @app_views.route('/orders', methods=['POST'])
-@jwt_required()
 def create_order():
     """
     Create a new order
@@ -100,7 +96,6 @@ def create_order():
 
 
 @app_views.route('/orders/<order_id>', methods=['DELETE'])
-@jwt_required()
 def remove_order(order_id):
     """
     Delete an order
@@ -125,7 +120,6 @@ def remove_order(order_id):
 
 
 @app_views.route('/orders/<order_id>/items', methods=['GET'])
-@jwt_required()
 def get_order_items(order_id):
     """
     Get all items in an order
@@ -155,7 +149,6 @@ def get_order_items(order_id):
 
 
 @app_views.route('/orders/<order_id>/items', methods=['POST'])
-@jwt_required()
 def add_item_to_order(order_id):
     """
     Add an item to an order
@@ -196,7 +189,6 @@ def add_item_to_order(order_id):
 
 
 @app_views.route('/orders/<order_id>/items/<product_id>', methods=['DELETE'])
-@jwt_required()
 def remove_item_from_order(order_id, product_id):
     """
     Remove an item from an order

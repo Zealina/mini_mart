@@ -8,6 +8,8 @@ from models import storage
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 from werkzeug.exceptions import RequestEntityTooLarge
+import logging
+from logging.handlers import RotatingFileHandler
 import os
 
 
@@ -15,9 +17,25 @@ load_dotenv()
 
 
 app = Flask(__name__)
-
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 jwt = JWTManager(app)
+
+if not os.path.exists("logs"):
+    os.makedirs("logs")
+
+log_file = os.path.join("logs", "app.log")
+
+handler = RotatingFileHandler(log_file, maxBytes=5*1024*1024, backupCount=5)
+handler.setLevel(logging.INFO)
+
+formatter = logging.Formatter(
+    "%(asctime)s - %(levelname)s - %(name)s - %(message)s [in %(pathname)s:%(lineno)d]"
+)
+handler.setFormatter(formatter)
+
+app.logger.addHandler(handler)
+app.logger.setLevel(logging.INFO)
+
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), "assets")
 MAX_CONTENT_LENGTH = 5 * 1024 * 1024
@@ -37,26 +55,31 @@ swagger_template = {
         "User": {
             "type": "object",
             "properties": {
-                "id": {"type": "string", "example": "123e4567-e89b-12d3-a456-426614174000"},
-                "email": {"type": "string", "example": "user@example.com"},
-                "first_name": {"type": "string", "example": "John"},
-                "last_name": {"type": "string", "example": "Doe"},
-                "created_at": {"type": "string", "format": "date-time", "example": "2025-09-23T12:34:56"},
-                "updated_at": {"type": "string", "format": "date-time", "example": "2025-09-23T12:34:56"}
+                "id": {"type": "string", "format": "uuid"},
+                "email": {"type": "string"},
+                "first_name": {"type": "string"},
+                "last_name": {"type": "string"},
+                "created_at": {"type": "string", "format": "date-time"},
+                "updated_at": {"type": "string", "format": "date-time"},
+                "phone_number": {"type": "string"},
+                "whatsapp_number": {"type": "string"},
+                "address": {"type": "string"},
+                "password": {"type": "string"},
+                "is_admin": {"type": "bool"}
             },
-            "required": ["email", "first_name", "last_name"]
+            "required": ["email", "first_name", "last_name", "password", "whatsapp_number"]
         },
         "Product": {
             "type": "object",
             "properties": {
-                "id": {"type": "string", "example": "987e6543-e21b-12d3-a456-426614174999"},
-                "name": {"type": "string", "example": "Apple iPhone 15"},
-                "description": {"type": "string", "example": "Latest iPhone model"},
-                "price": {"type": "number", "format": "float", "example": 1299.99},
-                "stock": {"type": "integer", "example": 50},
-                "category_id": {"type": "string", "example": "111e2222-e33b-44d3-a456-426614174abc"},
-                "created_at": {"type": "string", "format": "date-time", "example": "2025-09-23T12:34:56"},
-                "updated_at": {"type": "string", "format": "date-time", "example": "2025-09-23T12:34:56"}
+                "id": {"type": "string", "format": "uuid"},
+                "name": {"type": "string"},
+                "description": {"type": "string"},
+                "price": {"type": "number"},
+                "stock": {"type": "integer"},
+                "category_id": {"type": "string", "format": "uuid"},
+                "created_at": {"type": "string", "format": "date-time"},
+                "updated_at": {"type": "string", "format": "date-time"}
             },
             "required": ["name", "price", "stock"]
         },
@@ -65,8 +88,9 @@ swagger_template = {
             "properties": {
                 "id": {"type": "string", "format": "uuid"},
                 "name": {"type": "string"},
-                "description": {"type": "string"},
-                "parent_id": {"type": "string", "format": "uuid"}
+                "parent_id": {"type": "string", "format": "uuid"},
+                "created_at": {"type": "string", "format": "date-time"},
+                "updated_at": {"type": "string", "format": "date-time"}
     },
             "required": ["name"]
         },
@@ -75,13 +99,15 @@ swagger_template = {
             "properties": {
                 "id": {"type": "string", "format": "uuid"},
                 "user_id": {"type": "string", "format": "uuid"},
-                "status": {"type": "string"},
+                "completed": {"type": "bool"},
                 "created_at": {"type": "string", "format": "date-time"},
+                "updated_at": {"type": "string", "format": "date-time"},
                 "items": {
                     "type": "array",
                     "items": {"$ref": "#/definitions/OrderItem"}
                 }
-            }
+            },
+
         },
         "OrderItem": {
             "type": "object",
