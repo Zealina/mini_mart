@@ -9,7 +9,9 @@ from flask_jwt_extended import (
     jwt_required,
     get_jwt_identity
 )
+from flask_jwt_extended import get_jwt, verify_jwt_in_request
 from repositories.user_repo import UserRepo
+from functools import wraps
 
 
 @app_views.route("/login", methods=["POST"])
@@ -63,13 +65,15 @@ def login():
     if not user or not user.check_password(password):
         return jsonify({"error": "Incorrect email or password"}), 401
 
-    access_token = create_access_token(identity=user.id)
+    access_token = create_access_token(
+            identity=user.id,
+            additional_claims={"is_admin": user.is_admin})
     refresh_token = create_refresh_token(identity=user.id)
 
     return jsonify(
         access_token=access_token,
         refresh_token=refresh_token,
-        user={"id": user.id, "email": user.email}
+        user=user
     ), 200
 
 
@@ -134,5 +138,22 @@ def refresh():
         description: Invalid or missing refresh token
     """
     current_user_id = get_jwt_identity()
-    new_access_token = create_access_token(identity=current_user_id)
-    return jsonify(access_token=new_access_token), 200
+    user = UserRepo.get(current_user_id)
+    n_tk = create_access_token(identity=current_user_id,
+                               additional_claims={"is_admin": user.is_admin})
+    return jsonify(access_token=n_tk), 200
+
+def admin_required():
+    def wrapper(fn):
+        @wraps(fn)
+        def decorator(*args, **kwargs):
+            verify_jwt_in_request()
+            claims = get_jwt()
+            if claims.get("is_admin"):
+                return fn(*args, **kwargs)
+            else:
+                return jsonify(error="admins only!"), 403
+
+        return decorator
+
+    return wrapper

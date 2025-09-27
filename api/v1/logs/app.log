@@ -398,3 +398,78 @@ Traceback (most recent call last):
     return jsonify([product.to_dict() for product in products]), 200
                                                      ^^^^^^^^
 TypeError: 'Product' object is not iterable
+2025-09-27 02:20:47,952 - ERROR - api.v1.app - Exception on /products [GET] [in /usr/lib/python3/dist-packages/flask/app.py:875]
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/zealina/mini_mart/api/v1/views/auth.py", line 148, in decorator
+    if claims["is_admin"]:
+       ~~~~~~^^^^^^^^^^^^
+KeyError: 'is_admin'
+2025-09-27 02:22:26,182 - ERROR - api.v1.app - Exception on /products [GET] [in /usr/lib/python3/dist-packages/flask/app.py:875]
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/zealina/mini_mart/api/v1/views/auth.py", line 148, in decorator
+    if claims["is_admin"]:
+       ~~~~~~^^^^^^^^^^^^
+KeyError: 'is_admin'
+2025-09-27 02:24:13,011 - ERROR - api.v1.app - Exception on /products [GET] [in /usr/lib/python3/dist-packages/flask/app.py:875]
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/zealina/mini_mart/api/v1/views/auth.py", line 148, in decorator
+    if claims["is_admin"]:
+       ~~~~~~^^^^^^^^^^^^
+KeyError: 'is_admin'
+2025-09-27 02:25:15,909 - ERROR - api.v1.app - Exception on /products [GET] [in /usr/lib/python3/dist-packages/flask/app.py:875]
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/zealina/mini_mart/api/v1/views/auth.py", line 149, in decorator
+    print(claims.__dict__)
+          ^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute '__dict__'. Did you mean: '__dir__'?
+2025-09-27 02:38:23,149 - ERROR - api.v1.app - Exception on /products [GET] [in /usr/lib/python3/dist-packages/flask/app.py:875]
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/lib/python3/dist-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/zealina/mini_mart/api/v1/views/auth.py", line 153, in decorator
+    print(claims.__dict__)
+          ^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute '__dict__'. Did you mean: '__dir__'?

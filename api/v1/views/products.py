@@ -9,6 +9,7 @@ from flask import (
 from werkzeug.utils import secure_filename
 from api.v1.views import app_views
 from repositories.product_repo import ProductRepo
+from api.v1.views.auth import admin_required
 
 
 allowed_extensions = {
@@ -33,6 +34,7 @@ def save_image(image):
 
 
 @app_views.route('/products', methods=['GET'])
+@admin_required()
 def get_all_products():
     """
     Get all products
