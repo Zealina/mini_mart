@@ -76,7 +76,7 @@ class ProductRepo:
         category = storage.get(Category, category_id)
         if not category:
             return False
-        return storage.get_by_attr(Product, category_id=category_id)
+        return storage.all_by_attr(Product, category_id=category_id)
 
     @classmethod
     def move_product_to_category(cls, product_id: str, new_category_id: str) -> Product | None:
