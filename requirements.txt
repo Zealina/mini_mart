@@ -6,3 +6,4 @@ flasgger
 flask-jwt-extended
 pycodestyle
 pep8
+flask-cors

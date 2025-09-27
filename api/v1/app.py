@@ -6,6 +6,7 @@ from api.v1.views import app_views
 from flasgger import Swagger
 from models import storage
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 from dotenv import load_dotenv
 from werkzeug.exceptions import RequestEntityTooLarge
 import logging
@@ -17,6 +18,7 @@ load_dotenv()
 
 
 app = Flask(__name__)
+CORS(app)
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 jwt = JWTManager(app)
 
