@@ -7,7 +7,7 @@ This module manages CRUD operations for categories.
 from api.v1.views import app_views
 from flask import jsonify, request
 from repositories.category_repo import CategoryRepo
-
+from api.v1.views.auth import admin_required # ✅ SECURITY IMPORT ADDED
 
 @app_views.route('/categories', methods=['GET'])
 def get_all_categories():
@@ -27,7 +27,6 @@ def get_all_categories():
     cat_list = CategoryRepo.all()
     cat_list = [entry.to_dict() for entry in cat_list]
     return jsonify(cat_list)
-
 
 @app_views.route('/categories/<category_id>', methods=['GET'])
 def get_category(category_id):
@@ -55,8 +54,8 @@ def get_category(category_id):
         return jsonify(category.to_dict())
     return jsonify({"error": "category not found"}), 404
 
-
 @app_views.route('/categories', methods=['POST'])
+@admin_required() # ✅ SECURITY RESTORED
 def create_category():
     """
     Create a new category
@@ -90,8 +89,8 @@ def create_category():
         }), 400
     return jsonify({"success": "OK"}), 201
 
-
 @app_views.route('/categories/<category_id>', methods=['PUT'])
+@admin_required() # ✅ SECURITY RESTORED
 def update_category(category_id):
     """
     Update an existing category
@@ -126,8 +125,8 @@ def update_category(category_id):
         return jsonify({"error": "category not found"}), 404
     return jsonify({"success": "OK"}), 200
 
-
 @app_views.route('/categories/<category_id>', methods=['DELETE'])
+@admin_required() # ✅ SECURITY RESTORED
 def remove_category(category_id):
     """
     Delete a category

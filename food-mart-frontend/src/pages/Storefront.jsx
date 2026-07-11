@@ -1,14 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Database, User, LogOut, ShoppingCart, Search, Grid, ShieldCheck, ShoppingBag, ChevronDown, Package, Settings, Code } from 'lucide-react';
+import { Database, User, LogOut, ShoppingCart, Search, Grid, ShieldCheck, ShoppingBag, ChevronDown, Package, Settings, X, Tag, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function Storefront({ user, handleLogout, products, categories, addToCart, cartCount }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [viewProduct, setViewProduct] = useState(null);
 
-  // DEMO MODE: Always show the Admin button.
-  const isAdmin = true; 
+  // ✅ STATE & LOGIC FOR THE HERO SLIDER
+  const [currentSlide, setCurrentSlide] = useState(0);
+  
+  const slides = [
+    { id: 1, image: '/slider1.jpeg', alt: 'Everyday Needs Delivered Fast' },
+    { id: 2, image: '/slider2.jpeg', alt: '1 Year Anniversary C_Express' },
+    { id: 3, image: '/slider3.jpeg', alt: 'Hello July Good Vibes' }
+  ];
+
+  // Auto-play the slider every 8 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+    }, 8000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
+
+  const actualUser = user?.user || user;
+  const isAdmin = actualUser && (actualUser.is_admin == 1 || actualUser.is_admin === true);
 
   const filteredProducts = products.filter(product => {
     const matchesCategory = selectedCategory ? product.category_id === selectedCategory : true;
@@ -20,17 +38,18 @@ export default function Storefront({ user, handleLogout, products, categories, a
   });
 
   return (
-    <div className="min-h-screen bg-[#f1f1f2] font-sans text-[#282828] flex flex-col">
+    <div className="min-h-screen bg-[#f1f1f2] font-sans text-[#282828] flex flex-col relative">
       
-      {/* 🛠️ DEVELOPER DEBUG BANNER */}
-      <div className="bg-yellow-200 text-yellow-900 text-xs font-bold py-1.5 px-4 flex justify-center items-center gap-2 tracking-wide">
-        <Code className="h-4 w-4" />
-        DEMO MODE ACTIVE: SECURITY DISABLED FOR HOSTING
-      </div>
+      {isAdmin && (
+        <div className="bg-green-200 text-green-900 text-xs font-bold py-1.5 px-4 flex justify-center items-center gap-2 tracking-wide">
+          <ShieldCheck className="h-4 w-4" />
+          SECURE ADMIN SESSION ACTIVE
+        </div>
+      )}
 
-      <nav className="bg-white shadow-sm p-4 flex justify-between items-center px-4 sm:px-8 sticky top-0 z-50">
-        <Link to="/" className="font-black text-[#f68b1e] text-2xl tracking-tight">
-          FOOD MART
+      <nav className="bg-white shadow-sm p-3 flex justify-between items-center px-4 sm:px-8 sticky top-0 z-40">
+        <Link to="/" className="flex items-center">
+          <img src="/logo-horizontal.png\" alt="C_Express Mini-Mart" className="h-12 object-contain mix-blend-multiply" />
         </Link>
         
         <div className="hidden md:flex flex-1 max-w-xl mx-8 relative">
@@ -51,21 +70,27 @@ export default function Storefront({ user, handleLogout, products, categories, a
             </Link>
           )}
 
-          {user ? (
+          {actualUser ? (
             <div className="relative">
               <button 
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                 className="flex items-center space-x-2 text-gray-700 hover:text-[#f68b1e] font-medium transition-colors cursor-pointer p-1"
               >
                 <User className="h-5 w-5 text-[#f68b1e]" />
-                <span className="text-sm">Hi, {user.first_name || 'User'}</span>
+                <span className="text-sm">Hi, {actualUser.first_name || 'User'}</span>
                 <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {isUserMenuOpen && (
                 <div className="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 animate-fade-in">
                   <div className="p-4 border-b border-gray-50 bg-gray-50/50">
-                    <p className="text-sm font-bold text-gray-900">{user.first_name || 'User'}</p>
+                    <p className="text-sm font-bold text-gray-900">{actualUser.first_name} {actualUser.last_name || ''}</p>
+                    <p className="text-xs text-gray-500 truncate">{actualUser.email}</p>
+                  </div>
+                  <div className="p-2 flex flex-col">
+                    <Link to="/orders" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-orange-50 hover:text-[#f68b1e] rounded-lg transition-colors">
+                      <Package className="h-4 w-4" /> My Orders
+                    </Link>
                   </div>
                   <div className="p-2 border-t border-gray-50">
                     <button 
@@ -84,7 +109,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
           ) : (
             <Link to="/auth" className="flex items-center space-x-2 text-gray-700 hover:text-[#f68b1e] font-medium transition-colors">
               <User className="h-6 w-6" />
-              <span className="inline text-sm">Login / Register</span>
+              <span className="hidden md:inline text-sm">Login / Register</span>
             </Link>
           )}
           
@@ -101,15 +126,47 @@ export default function Storefront({ user, handleLogout, products, categories, a
       </nav>
 
       <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        <div className="bg-gradient-to-r from-[#f68b1e] to-orange-400 rounded-2xl shadow-md p-8 mb-8 text-white flex flex-col md:flex-row items-center justify-between">
-          <div className="max-w-xl">
-            <span className="bg-white/20 text-white text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full">Ramadan Deals</span>
-            <h2 className="text-3xl md:text-5xl font-black mb-3 mt-3 tracking-tight">Fresh Groceries, Fast Delivery!</h2>
-            <p className="text-sm md:text-base text-orange-50 mb-4">Stock your home shelves with premium food items, beverages and household ingredients at wholesale prices.</p>
+        
+        {/* ✅ DYNAMIC HERO SLIDER */}
+        <div className="relative w-full h-[250px] md:h-[400px] rounded-2xl overflow-hidden shadow-md mb-8 group bg-white">
+          {slides.map((slide, index) => (
+            <div
+              key={slide.id}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+            >
+              <img 
+                src={slide.image} 
+                alt={slide.alt} 
+                className="w-full h-full object-cover md:object-contain bg-gray-50" 
+              />
+            </div>
+          ))}
+          
+          {/* Navigation Dots */}
+          <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center gap-2">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`h-2.5 rounded-full transition-all duration-300 shadow-sm ${index === currentSlide ? 'bg-[#f68b1e] w-8' : 'bg-white/80 hover:bg-white w-2.5'}`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
           </div>
-          <div className="hidden md:block bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/10">
-            <ShieldCheck className="h-20 w-20 text-white stroke-1" />
-          </div>
+          
+          {/* Left/Right Arrows (Visible on Hover) */}
+          <button 
+            onClick={() => setCurrentSlide(prev => prev === 0 ? slides.length - 1 : prev - 1)} 
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm"
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </button>
+          <button 
+            onClick={() => setCurrentSlide(prev => prev === slides.length - 1 ? 0 : prev + 1)} 
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm"
+          >
+            <ChevronRight className="h-6 w-6" />
+          </button>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
@@ -118,7 +175,6 @@ export default function Storefront({ user, handleLogout, products, categories, a
               <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
                 <Grid className="h-4 w-4 text-[#f68b1e]" /> Categories
               </h3>
-              
               <div className="relative">
                 <select
                   value={selectedCategory || ''}
@@ -127,9 +183,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
                 >
                   <option value="">All Categories</option>
                   {categories.map(cat => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
                   ))}
                 </select>
               </div>
@@ -152,7 +206,11 @@ export default function Storefront({ user, handleLogout, products, categories, a
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredProducts.map(product => (
-                  <div key={product.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 group flex flex-col">
+                  <div 
+                    key={product.id} 
+                    onClick={() => setViewProduct(product)}
+                    className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col cursor-pointer"
+                  >
                     <div className="relative h-48 overflow-hidden bg-gray-50 flex items-center justify-center">
                       {product.image_url ? (
                         <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -161,7 +219,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
                       )}
                     </div>
                     <div className="p-4 flex flex-col flex-grow">
-                      <h3 className="text-sm font-semibold text-gray-800 line-clamp-2 h-10 leading-tight">{product.name}</h3>
+                      <h3 className="text-sm font-semibold text-gray-800 line-clamp-2 h-10 leading-tight group-hover:text-[#f68b1e] transition-colors">{product.name}</h3>
                       <p className="text-xs text-gray-400 mt-1">{product.brand || 'Generic'}</p>
                       <div className="mt-auto pt-4 border-t border-gray-50 flex flex-col">
                         <span className="text-lg font-bold text-gray-900">₦{parseFloat(product.price).toLocaleString()}</span>
@@ -169,8 +227,8 @@ export default function Storefront({ user, handleLogout, products, categories, a
                           <span className="text-xs font-semibold text-red-500 mt-2 text-center bg-red-50 py-1.5 rounded-lg">Out Of Stock</span>
                         ) : (
                           <button 
-                            onClick={() => addToCart(product)}
-                            className="w-full mt-3 bg-[#f68b1e] text-white py-2 rounded-lg text-sm font-bold hover:bg-orange-600 transition-colors shadow-sm flex justify-center items-center gap-2"
+                            onClick={(e) => { e.stopPropagation(); addToCart(product); }}
+                            className="w-full mt-3 bg-white border border-[#f68b1e] text-[#f68b1e] py-2 rounded-lg text-sm font-bold hover:bg-[#f68b1e] hover:text-white transition-colors shadow-sm flex justify-center items-center gap-2"
                           >
                             <ShoppingCart className="h-4 w-4" /> ADD TO CART
                           </button>
@@ -184,6 +242,86 @@ export default function Storefront({ user, handleLogout, products, categories, a
           </div>
         </div>
       </main>
+
+      <footer className="bg-[#282828] text-white py-12 mt-auto">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col items-center text-center">
+          <img src="/logo-circular.png" alt="C_Express Mini-Mart" className="h-20 w-20 rounded-full mb-4 shadow-lg object-contain bg-white" />
+          <p className="text-gray-400 text-sm">© 2026 C_Express Mini-Mart. All Rights Reserved.</p>
+        </div>
+      </footer>
+
+      {viewProduct && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
+          onClick={() => setViewProduct(null)}
+        >
+          <div 
+            className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col md:flex-row relative" 
+            onClick={e => e.stopPropagation()}
+          >
+            <button 
+              onClick={() => setViewProduct(null)}
+              className="absolute top-4 right-4 bg-white/80 p-2 rounded-full text-gray-500 hover:text-red-500 hover:bg-red-50 z-10 transition-colors shadow-sm backdrop-blur-md"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            
+            <div className="w-full md:w-1/2 bg-gray-50 min-h-[300px] md:min-h-full flex items-center justify-center p-6 border-r border-gray-100">
+              {viewProduct.image_url ? (
+                <img src={viewProduct.image_url} alt={viewProduct.name} className="w-full h-auto object-contain drop-shadow-md rounded-xl" />
+              ) : (
+                <ShoppingBag className="h-24 w-24 text-gray-300 stroke-1" />
+              )}
+            </div>
+
+            <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col">
+              <span className="text-xs font-bold text-[#f68b1e] uppercase tracking-wider mb-2">
+                {categories.find(c => c.id === viewProduct.category_id)?.name || 'Product Detail'}
+              </span>
+              <h2 className="text-2xl font-black text-gray-900 leading-tight mb-2">{viewProduct.name}</h2>
+              <div className="flex flex-wrap items-center gap-3 mb-6 border-b border-gray-100 pb-4">
+                <span className="flex items-center gap-1 text-sm font-semibold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-md">
+                  <Tag className="h-3.5 w-3.5" /> {viewProduct.brand || 'No Brand'}
+                </span>
+                {viewProduct.package_size && (
+                  <span className="text-sm font-semibold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-md">
+                    {viewProduct.package_size}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex-grow">
+                <h4 className="text-sm font-bold text-gray-900 mb-2">Description</h4>
+                <p className="text-gray-500 text-sm leading-relaxed mb-6 whitespace-pre-wrap">
+                  {viewProduct.description || 'No detailed description available for this item.'}
+                </p>
+              </div>
+
+              <div className="mt-auto pt-6 border-t border-gray-100">
+                <div className="flex justify-between items-end mb-4">
+                  <div>
+                    <span className="block text-xs text-gray-400 font-bold uppercase mb-1">Price</span>
+                    <span className="text-3xl font-black text-gray-900">₦{parseFloat(viewProduct.price).toLocaleString()}</span>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${viewProduct.stock > 0 ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                    {viewProduct.stock > 0 ? `${viewProduct.stock} In Stock` : 'Out of Stock'}
+                  </span>
+                </div>
+
+                <button 
+                  onClick={() => { addToCart(viewProduct); setViewProduct(null); }}
+                  disabled={viewProduct.stock <= 0}
+                  className={`w-full py-3.5 rounded-xl font-bold flex justify-center items-center gap-2 transition-all shadow-md ${viewProduct.stock > 0 ? 'bg-[#f68b1e] hover:bg-orange-600 text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+                >
+                  <ShoppingCart className="h-5 w-5" /> 
+                  {viewProduct.stock > 0 ? 'ADD TO CART' : 'CURRENTLY UNAVAILABLE'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

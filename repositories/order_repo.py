@@ -6,26 +6,19 @@ from models.order import Order
 from models.order_item import OrderItem
 from models.product import Product
 
-
 class OrderRepo:
     """Repository class to manage order operations"""
  
     @classmethod
-    def new(cls, user_id: str, items: dict) -> Order:
+    def new(cls, user_id: str, items: dict, address: str = None, phone: str = None) -> Order:
         """
         Create a new order with items.
-        Args:
-            user_id (str): The ID of the user placing the order
-            items (dict): Mapping of {product_id: quantity}
-        Returns:
-            Order: The created order
-        Raises:
-            ValueError: If items is empty or not a dict
         """
         if not items or not isinstance(items, dict):
             raise ValueError("Order items must be provided as a dict {product_id: quantity}")
 
-        order = Order(user_id=user_id)
+        # ✅ EXPLICIT OBJECT CREATION - No Kwargs!
+        order = Order(user_id=user_id, delivery_address=address, contact_phone=phone)
         order.save()
         storage.save()
 
@@ -61,11 +54,7 @@ class OrderRepo:
 
     @classmethod
     def add_item(cls, order_id: str, product_id: str, quantity: int) -> OrderItem | None:
-        """
-        Add a product to an existing order.
-        Returns:
-            OrderItem | None
-        """
+        """Add a product to an existing order"""
         order = cls.get(order_id)
         if not order:
             return None
@@ -76,11 +65,7 @@ class OrderRepo:
 
     @classmethod
     def remove_item(cls, order_id: str, product_id: str) -> bool:
-        """
-        Remove a product from an existing order.
-        Returns:
-            True if removed, False otherwise
-        """
+        """Remove a product from an existing order"""
         order = cls.get(order_id)
         if not order:
             return False

@@ -20,20 +20,18 @@ export default function Auth({ setUser }) {
 
     try {
       if (isLogin) {
-        // --- SECURE LOGIN ---
         const response = await apiClient.post('/login', {
           email: formData.email,
           password: formData.password
         });
         
-        setUser(response.data);
-        localStorage.setItem('foodMartUser', JSON.stringify(response.data));
+        const actualUser = response.data.user || response.data;
+        setUser(actualUser);
+        localStorage.setItem('foodMartUser', JSON.stringify(actualUser));
         
         setStatus({ type: 'success', message: 'Logged in successfully!' });
         setTimeout(() => navigate('/'), 1000);
       } else {
-        // --- SECURE REGISTRATION ---
-        // We only send optional fields if they are actually filled out!
         const registerPayload = {
           first_name: formData.first_name,
           last_name: formData.last_name,
@@ -61,8 +59,10 @@ export default function Auth({ setUser }) {
 
   return (
     <div className="min-h-screen bg-[#f1f1f2] flex flex-col items-center pt-12 px-4 sm:px-6 lg:px-8 pb-12">
-      <Link to="/" className="mb-8 text-center flex flex-col items-center gap-2 hover:opacity-80 transition-opacity">
-        <span className="text-4xl font-black text-[#f68b1e] tracking-tight">FOOD MART</span>
+      
+      {/* ✅ BRAND LOGO ON AUTH PAGE */}
+      <Link to="/" className="mb-8 text-center flex flex-col items-center gap-3 hover:opacity-80 transition-opacity">
+        <img src="/logo-vertical.png" alt="C_Express Mini-Mart" className="h-28 w-28 rounded-full shadow-md object-contain bg-white border-2 border-white" />
         <span className="text-gray-500 text-sm font-medium flex items-center gap-1"><Store className="h-4 w-4"/> Return to Storefront</span>
       </Link>
 
