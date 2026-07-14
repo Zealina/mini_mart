@@ -9,7 +9,7 @@ import apiClient from '../api/client';
 
 export default function AdminDashboard({ categories, products, triggerReload }) {
   const [status, setStatus] = useState({ type: '', message: '' });
-  const [activeTab, setActiveTab] = useState('products'); // products, categories, orders
+  const [activeTab, setActiveTab] = useState('orders'); // Defaulted to orders for quick dispatch
   
   // Forms & Modals
   const [catName, setCatName] = useState('');
@@ -19,11 +19,9 @@ export default function AdminDashboard({ categories, products, triggerReload }) 
   });
   const [prodImage, setProdImage] = useState(null);
   
-  // ✅ NEW ADMIN ORDERS STATE
   const [orders, setOrders] = useState([]);
   const [viewOrder, setViewOrder] = useState(null);
 
-  // Fetch Orders when Admin switches to the Orders Tab
   useEffect(() => {
     const fetchAdminOrders = async () => {
       try {
@@ -51,7 +49,6 @@ export default function AdminDashboard({ categories, products, triggerReload }) 
     return 0;
   };
 
-  // --- CRUD HANDLERS ---
   const handleCategorySubmit = async (e) => {
     e.preventDefault();
     if (!catName.trim()) return;
@@ -193,7 +190,6 @@ export default function AdminDashboard({ categories, products, triggerReload }) 
           </div>
         )}
 
-        {/* ✅ DYNAMIC LAYOUT BASED ON TAB */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* ORDERS TAB (FULL WIDTH) */}
@@ -213,47 +209,53 @@ export default function AdminDashboard({ categories, products, triggerReload }) 
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse text-sm">
                       <thead>
-                        <tr className="border-b border-gray-100 text-gray-400 font-semibold bg-gray-50/50">
-                          <th className="p-3 rounded-tl-lg">Order ID</th>
-                          <th className="p-3">Items</th>
-                          <th className="p-3">Contact Number</th>
-                          <th className="p-3">GPS / Address</th>
-                          <th className="p-3 text-right rounded-tr-lg">Action</th>
+                        <tr className="border-b border-gray-200 text-gray-500 font-bold bg-gray-50/50 uppercase text-xs tracking-wider">
+                          <th className="p-4 rounded-tl-lg">Order Number</th>
+                          <th className="p-4">Items</th>
+                          <th className="p-4">Contact Number</th>
+                          <th className="p-4">GPS / Address</th>
+                          <th className="p-4 text-right rounded-tr-lg">Action</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-100">
-                        {orders.map(order => (
-                          <tr key={order.id} className="hover:bg-orange-50/30 transition-colors group">
-                            <td className="p-3 font-mono text-xs text-gray-600">
-                              {order.id.substring(0, 8)}
-                            </td>
-                            <td className="p-3 font-bold text-gray-800">
-                              {getItemsCount(order)} units
-                            </td>
-                            <td className="p-3 text-gray-600 font-medium">
-                              {order.contact_phone || 'No phone'}
-                            </td>
-                            <td className="p-3">
-                              {order.gps_link ? (
-                                <span className="text-blue-600 font-bold flex items-center gap-1 text-xs bg-blue-50 px-2 py-1 rounded w-max">
-                                  <Navigation className="h-3 w-3" /> GPS Provided
+                        {orders.map((order, idx) => {
+                          const orderNumber = orders.length - idx;
+                          return (
+                            <tr key={order.id} className="hover:bg-orange-50/30 transition-colors group">
+                              <td className="p-4">
+                                <div className="font-black text-gray-900 text-sm">Order #{orderNumber}</div>
+                                <div className="font-mono text-[10px] text-gray-400 mt-0.5">UUID: {order.id.substring(0, 8)}</div>
+                              </td>
+                              <td className="p-4 font-bold text-gray-800">
+                                <span className="bg-gray-100 text-gray-700 px-2.5 py-1 rounded text-xs">
+                                  {getItemsCount(order)} units
                                 </span>
-                              ) : (
-                                <span className="text-gray-500 text-xs truncate max-w-[150px] inline-block">
-                                  {order.delivery_address || 'Not Provided'}
-                                </span>
-                              )}
-                            </td>
-                            <td className="p-3 text-right">
-                              <button 
-                                onClick={() => setViewOrder(order)}
-                                className="text-xs font-bold bg-[#f68b1e] text-white px-4 py-1.5 rounded hover:bg-orange-600 shadow-sm transition-colors"
-                              >
-                                View Dispatch
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
+                              </td>
+                              <td className="p-4 text-gray-600 font-medium">
+                                {order.contact_phone || 'No phone'}
+                              </td>
+                              <td className="p-4">
+                                {order.gps_link ? (
+                                  <span className="text-blue-600 font-bold flex items-center gap-1 text-xs bg-blue-50 px-2.5 py-1 rounded w-max border border-blue-100">
+                                    <Navigation className="h-3 w-3" /> GPS Location Attached
+                                  </span>
+                                ) : (
+                                  <span className="text-gray-500 text-xs truncate max-w-[200px] inline-block font-medium">
+                                    {order.delivery_address || 'Not Provided'}
+                                  </span>
+                                )}
+                              </td>
+                              <td className="p-4 text-right">
+                                <button 
+                                  onClick={() => setViewOrder({ ...order, orderNumber })}
+                                  className="text-xs font-bold bg-gray-900 text-white px-5 py-2 rounded-lg hover:bg-[#f68b1e] shadow-sm transition-all flex items-center gap-2 ml-auto"
+                                >
+                                  View Dispatch <ExternalLink className="h-3.5 w-3.5" />
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -458,8 +460,10 @@ export default function AdminDashboard({ categories, products, triggerReload }) 
           >
             <div className="bg-gray-950 p-6 flex justify-between items-center sticky top-0 z-10">
               <div>
-                <h3 className="text-lg font-black text-white">Dispatch Invoice</h3>
-                <p className="text-xs text-gray-400 font-mono mt-1">ID: {viewOrder.id}</p>
+                <h3 className="text-lg font-black text-white flex items-center gap-2">
+                  Dispatch Invoice <span className="text-[#f68b1e]">#{viewOrder.orderNumber}</span>
+                </h3>
+                <p className="text-xs text-gray-400 font-mono mt-1">UUID: {viewOrder.id}</p>
               </div>
               <button 
                 onClick={() => setViewOrder(null)}
@@ -475,10 +479,10 @@ export default function AdminDashboard({ categories, products, triggerReload }) 
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex items-start gap-3">
-                    <Phone className="h-4 w-4 text-orange-400 mt-0.5" />
+                    <Phone className="h-4 w-4 text-orange-500 mt-0.5" />
                     <div>
                       <span className="block text-xs font-bold text-gray-400 uppercase">Contact Phone</span>
-                      <span className="text-sm font-bold text-gray-900">{viewOrder.contact_phone || 'Not Provided'}</span>
+                      <span className="text-sm font-bold text-gray-900 leading-none">{viewOrder.contact_phone || 'Not Provided'}</span>
                     </div>
                   </div>
 
@@ -487,7 +491,7 @@ export default function AdminDashboard({ categories, products, triggerReload }) 
                       <Navigation className="h-4 w-4 text-blue-500 mt-0.5" />
                       <div>
                         <span className="block text-xs font-bold text-gray-400 uppercase">Google Maps Dispatch</span>
-                        <a href={viewOrder.gps_link} target="_blank" rel="noopener noreferrer" className="text-sm font-black text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded">
+                        <a href={viewOrder.gps_link} target="_blank" rel="noopener noreferrer" className="text-sm font-black text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
                           Open Map <ExternalLink className="h-3 w-3" />
                         </a>
                       </div>
@@ -496,10 +500,10 @@ export default function AdminDashboard({ categories, products, triggerReload }) 
                 </div>
 
                 <div className="flex items-start gap-3 pt-2">
-                  <MapPin className="h-4 w-4 text-orange-400 mt-0.5" />
-                  <div>
+                  <MapPin className="h-4 w-4 text-orange-500 mt-0.5" />
+                  <div className="w-full">
                     <span className="block text-xs font-bold text-gray-400 uppercase">Typed Address</span>
-                    <span className="text-sm font-medium text-gray-800 bg-white p-2 border border-gray-100 rounded block mt-1">
+                    <span className="text-sm font-medium text-gray-800 bg-white p-3 border border-gray-100 rounded-lg block mt-1 w-full shadow-sm">
                       {viewOrder.delivery_address || 'No typed address provided'}
                     </span>
                   </div>
@@ -507,26 +511,28 @@ export default function AdminDashboard({ categories, products, triggerReload }) 
               </div>
 
               <div>
-                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 border-b border-gray-100 pb-2">Items to Pack</h4>
+                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 border-b border-gray-100 pb-2 flex items-center gap-1.5">
+                  <ShoppingBag className="h-3.5 w-3.5" /> Items to Pack
+                </h4>
                 <div className="space-y-3">
                   {viewOrder.order_items?.map((item, index) => {
                     const productInfo = products.find(p => p.id === item.product_id);
                     return (
-                      <div key={index} className="flex items-center gap-4 bg-gray-50 border border-gray-100 p-3 rounded-xl">
-                        <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center border border-gray-100 flex-shrink-0">
+                      <div key={index} className="flex items-center gap-4 bg-gray-50 border border-gray-100 p-3 rounded-xl shadow-sm">
+                        <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center border border-gray-100 flex-shrink-0 p-1">
                           {productInfo?.image_url ? (
-                            <img src={productInfo.image_url} alt={productInfo.name} className="w-full h-full object-cover rounded-lg" />
+                            <img src={productInfo.image_url} alt={productInfo.name} className="w-full h-full object-cover rounded" />
                           ) : (
                             <ShoppingBag className="h-5 w-5 text-gray-300" />
                           )}
                         </div>
                         <div className="flex-grow">
                           <p className="text-sm font-bold text-gray-800 line-clamp-1">{productInfo ? productInfo.name : 'Unknown Product'}</p>
-                          <p className="text-xs text-gray-500 font-mono mt-0.5">ID: {item.product_id.substring(0,8)}</p>
+                          <p className="text-[10px] text-gray-400 font-mono mt-0.5">ID: {item.product_id.substring(0,8)}</p>
                         </div>
-                        <div className="text-right">
-                          <span className="text-xs text-gray-400 uppercase font-bold block">Qty</span>
-                          <span className="text-lg font-black text-[#f68b1e]">x{item.quantity}</span>
+                        <div className="text-right bg-white px-3 py-1.5 rounded-lg border border-gray-100">
+                          <span className="text-[10px] text-gray-400 uppercase font-bold block mb-1">Qty</span>
+                          <span className="text-lg font-black text-[#f68b1e] leading-none">x{item.quantity}</span>
                         </div>
                       </div>
                     );
