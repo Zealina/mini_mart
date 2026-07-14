@@ -176,3 +176,4 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
     </div>
   );
 }
+
