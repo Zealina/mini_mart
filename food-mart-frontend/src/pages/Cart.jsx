@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Minus, Plus, Trash2, CheckCircle2, AlertCircle, ShoppingBag, ArrowLeft, MapPin, CreditCard, Phone } from 'lucide-react';
 import apiClient from '../api/client';
 
-export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, user }) {
+export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, user, triggerReload }) {
   const navigate = useNavigate();
   const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const [isOrdering, setIsOrdering] = useState(false);
@@ -23,7 +23,6 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
       return;
     }
 
-    // Safely extract the user ID
     const userId = user.id || user.user_id || user.uuid || (user.user && user.user.id);
     if (!userId) {
       setOrderStatus({ type: 'error', message: 'User session invalid. Please log in again.' });
@@ -37,13 +36,15 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
     cart.forEach(item => { orderItems[item.id] = item.quantity; });
 
     try {
-      // 🚨 SPRINT FIX: Sending user_id, items, address, and phone explicitly!
       await apiClient.post('/orders', {
         user_id: userId,
         items: orderItems,
         address: deliveryAddress,
         phone: contactPhone
       });
+      
+      // ✅ TRIGGER RELOAD: Instantly fetch updated inventory stocks
+      if(triggerReload) triggerReload(); 
       
       setOrderStatus({ type: 'success', message: 'Order submitted successfully! Generating your invoice...' });
       
@@ -176,4 +177,3 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
     </div>
   );
 }
-

@@ -17,7 +17,6 @@ export default function Storefront({ user, handleLogout, products, categories, a
     { id: 3, image: '/slider3.jpeg', alt: 'Hello July Good Vibes' }
   ];
 
-  // Auto-play the slider every 8 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
@@ -49,7 +48,8 @@ export default function Storefront({ user, handleLogout, products, categories, a
 
       <nav className="bg-white shadow-sm p-3 flex justify-between items-center px-4 sm:px-8 sticky top-0 z-40">
         <Link to="/" className="flex items-center">
-          <img src="/logo-horizontal.png\" alt="C_Express Mini-Mart" className="h-12 object-contain mix-blend-multiply" />
+          {/* ✅ FIXED TYPO IN THE IMAGE SRC */}
+          <img src="/logo-horizontal.jpg" alt="C_Express Mini-Mart" className="h-12 object-contain mix-blend-multiply" />
         </Link>
         
         <div className="hidden md:flex flex-1 max-w-xl mx-8 relative">
@@ -145,7 +145,6 @@ export default function Storefront({ user, handleLogout, products, categories, a
             </div>
           ))}
           
-          {/* Navigation Dots */}
           <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center gap-2">
             {slides.map((_, index) => (
               <button
@@ -157,7 +156,6 @@ export default function Storefront({ user, handleLogout, products, categories, a
             ))}
           </div>
           
-          {/* Left/Right Arrows (Visible on Hover) */}
           <button 
             onClick={() => setCurrentSlide(prev => prev === 0 ? slides.length - 1 : prev - 1)} 
             className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm"
@@ -248,7 +246,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
 
       <footer className="bg-[#282828] text-white py-12 mt-auto">
         <div className="max-w-7xl mx-auto px-4 flex flex-col items-center text-center">
-          <img src="/logo-circular.png" alt="C_Express Mini-Mart" className="h-20 w-20 rounded-full mb-4 shadow-lg object-contain bg-white" />
+          <img src="/logo-circular.jpg" alt="C_Express Mini-Mart" className="h-20 w-20 rounded-full mb-4 shadow-lg object-contain bg-white" />
           <p className="text-gray-400 text-sm">© 2026 C_Express Mini-Mart. All Rights Reserved.</p>
         </div>
       </footer>

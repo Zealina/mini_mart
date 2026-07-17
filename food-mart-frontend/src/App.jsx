@@ -25,13 +25,11 @@ export default function App() {
 
   const getCartKey = (currentUser) => {
     if (!currentUser) return 'foodMartCart_guest';
-    // Prefer stable identifiers; fall back to 'guest' to avoid unstable keys
     const uniqueId = currentUser.id || currentUser.email || (currentUser.user && (currentUser.user.id || currentUser.user.email)) || 'guest';
     return `foodMartCart_${uniqueId}`;
   };
 
   useEffect(() => {
-    // Safely parse stored carts, tolerate corrupted data
     const safeParse = (key, fallback) => {
       try {
         const raw = localStorage.getItem(key);
@@ -90,13 +88,12 @@ export default function App() {
     }
   };
 
-  // Persist user to localStorage when it changes (client-only)
   useEffect(() => {
     try {
       if (user) localStorage.setItem('foodMartUser', JSON.stringify(user));
       else localStorage.removeItem('foodMartUser');
     } catch (e) {
-      console.warn('Failed to persist user to localStorage', e);
+      console.warn('Failed to persist user', e);
     }
   }, [user]);
 
@@ -107,7 +104,7 @@ export default function App() {
         ? prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item)
         : [...prev, { ...product, quantity: 1 }];
       
-      try { localStorage.setItem(getCartKey(user), JSON.stringify(newCart)); } catch (e) { console.warn('Failed to save cart', e); }
+      try { localStorage.setItem(getCartKey(user), JSON.stringify(newCart)); } catch (e) {}
       return newCart;
     });
   };
@@ -116,7 +113,7 @@ export default function App() {
      if (newQuantity < 1) return removeFromCart(id);
     setCart(prev => {
        const newCart = prev.map(item => item.id === id ? { ...item, quantity: newQuantity } : item);
-       try { localStorage.setItem(getCartKey(user), JSON.stringify(newCart)); } catch (e) { console.warn('Failed to save cart', e); }
+       try { localStorage.setItem(getCartKey(user), JSON.stringify(newCart)); } catch (e) {}
        return newCart;
     });
   };
@@ -124,7 +121,7 @@ export default function App() {
   const removeFromCart = (id) => {
     setCart(prev => {
        const newCart = prev.filter(item => item.id !== id);
-       try { localStorage.setItem(getCartKey(user), JSON.stringify(newCart)); } catch (e) { console.warn('Failed to save cart', e); }
+       try { localStorage.setItem(getCartKey(user), JSON.stringify(newCart)); } catch (e) {}
        return newCart;
     });
   };
@@ -140,14 +137,24 @@ export default function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Storefront user={user} handleLogout={handleLogout} products={products} categories={categories} addToCart={addToCart} cartCount={cartCount} />} />
-        <Route path="/cart" element={<Cart cart={cart} clearCart={clearCart} updateQuantity={updateQuantity} removeFromCart={removeFromCart} user={user} />} />
+        
+        {/* ✅ Passed triggerReload down to the cart */}
+        <Route path="/cart" element={<Cart cart={cart} clearCart={clearCart} updateQuantity={updateQuantity} removeFromCart={removeFromCart} user={user} triggerReload={triggerReload} />} />
+        
         <Route path="/orders" element={<Orders user={user} products={products} />} />
         <Route path="/auth" element={<Auth setUser={setUser} />} />
-        <Route path="/admin" element={<AdminRoute user={user}><AdminDashboard categories={categories} products={products} triggerReload={triggerReload} /></AdminRoute>} />
         
-        {/* ✅ THE NEW SETTINGS ROUTE */}
+        {/* Cleanly formatted JSX to prevent parsing errors */}
+        <Route 
+          path="/admin" 
+          element={
+            <AdminRoute user={user}>
+              <AdminDashboard categories={categories} products={products} triggerReload={triggerReload} />
+            </AdminRoute>
+          } 
+        />
+        
         <Route path="/settings" element={<Settings user={user} setUser={setUser} />} />
-        
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

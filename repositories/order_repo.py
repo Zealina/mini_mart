@@ -14,15 +14,27 @@ class OrderRepo:
         if not items or not isinstance(items, dict):
             raise ValueError("Order items must be provided as a dict {product_id: quantity}")
 
-        # ✅ Pass kwargs (delivery details) directly into Order creation so it saves instantly
+        # ✅ VERIFY STOCK BEFORE CREATING ORDER
+        for product_id, quantity in items.items():
+            product = storage.get(Product, product_id)
+            if not product:
+                raise ValueError(f"Product not found.")
+            if product.stock < quantity:
+                raise ValueError(f"Insufficient stock for {product.name}. Only {product.stock} left.")
+
+        # Create the order
         order = Order(user_id=user_id, **kwargs)
         order.save()
         storage.save()
 
+        # Save order items AND deduct from warehouse stock
         for product_id, quantity in items.items():
             product = storage.get(Product, product_id)
-            if not product:
-                raise ValueError(f"Product:{product_id} does not exist")
+            
+            # ✅ DEDUCT THE STOCK
+            product.stock -= quantity
+            product.save()
+
             new_item = OrderItem(order_id=order.id, product_id=product_id, quantity=quantity)
             new_item.save()
 
@@ -42,6 +54,14 @@ class OrderRepo:
         order = cls.get(order_id)
         if not order:
             return False
+            
+        # ✅ RESTOCK IF CANCELLED BY ADMIN
+        for item in order.order_items:
+            product = storage.get(Product, item.product_id)
+            if product: 
+                product.stock += item.quantity
+                product.save()
+
         storage.delete(order)
         storage.save()
         return True
