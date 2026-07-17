@@ -23,11 +23,18 @@ export default function Orders({ user, products }) {
         const userId = user.id || user.user_id || user.uuid || (user.user && user.user.id);
         const response = await apiClient.get('/orders');
         
-        const myOrders = Array.isArray(response.data) 
+        let myOrders = Array.isArray(response.data) 
           ? response.data.filter(o => o.user_id === userId) 
           : [];
         
-        setOrders(myOrders.reverse());
+        // ✅ STRATEGIC SORTING: Force newest dates to the top mathematically
+        myOrders.sort((a, b) => {
+          const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+          const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+          return dateB - dateA;
+        });
+        
+        setOrders(myOrders);
       } catch (error) {
         console.error("Failed to fetch orders:", error);
       } finally {
