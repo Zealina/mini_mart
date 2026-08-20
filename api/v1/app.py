@@ -17,8 +17,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# UPDATED: Added your live Vercel URL to the CORS origins list
-CORS(app, supports_credentials=True, origins=["http://localhost:5173", "https://mini-mart-silk.vercel.app"])
+CORS(app, supports_credentials=True, origins=["http://localhost", "http://localhost:5173"])
 
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 app.config["JWT_TOKEN_LOCATION"] = ["headers", "cookies"]
@@ -137,9 +136,9 @@ swagger_template = {
 
 swagger = Swagger(app, template=swagger_template)
 
-app.register_blueprint(app_views)
+app.register_blueprint(app_views, url_prefix="/api")
 
-@app.route("/", methods=["GET"])
+@app.route("/api", methods=["GET"], strict_slashes=False)
 def index():
     """Root endpoint """
     resp = {"status": "OK", "time": datetime.now()}
@@ -168,4 +167,4 @@ def shutdown_session(exception=None):
     storage.close()
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=True)

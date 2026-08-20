@@ -1,0 +1,35 @@
+2026-08-20 12:52:52,243 - ERROR - app - Exception on /login [POST] [in /home/keziah/.venv/lib/python3.12/site-packages/flask/app.py:875]
+Traceback (most recent call last):
+  File "/home/keziah/.venv/lib/python3.12/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/keziah/.venv/lib/python3.12/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/keziah/.venv/lib/python3.12/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "/home/keziah/.venv/lib/python3.12/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/keziah/.venv/lib/python3.12/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/keziah/mini_mart/api/v1/views/auth.py", line 67, in login
+    access_token = create_access_token(
+                   ^^^^^^^^^^^^^^^^^^^^
+  File "/home/keziah/.venv/lib/python3.12/site-packages/flask_jwt_extended/utils.py", line 174, in create_access_token
+    return jwt_manager._encode_jwt_from_config(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/keziah/.venv/lib/python3.12/site-packages/flask_jwt_extended/jwt_manager.py", line 527, in _encode_jwt_from_config
+    secret=self._encode_key_callback(identity),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/keziah/.venv/lib/python3.12/site-packages/flask_jwt_extended/default_callbacks.py", line 161, in default_encode_key_callback
+    return config.encode_key
+           ^^^^^^^^^^^^^^^^^
+  File "/home/keziah/.venv/lib/python3.12/site-packages/flask_jwt_extended/config.py", line 36, in encode_key
+    return self._private_key if self.is_asymmetric else self._secret_key
+                                                        ^^^^^^^^^^^^^^^^
+  File "/home/keziah/.venv/lib/python3.12/site-packages/flask_jwt_extended/config.py", line 238, in _secret_key
+    raise RuntimeError(
+RuntimeError: JWT_SECRET_KEY or flask SECRET_KEY must be set when using symmetric algorithm "HS256"

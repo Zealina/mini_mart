@@ -22,10 +22,6 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
   const [orders, setOrders] = useState([]);
   const [viewOrder, setViewOrder] = useState(null);
 
-  const [carouselImages, setCarouselImages] = useState([]);
-  const [carouselFiles, setCarouselFiles] = useState([]);
-  const [carouselUploading, setCarouselUploading] = useState(false);
-
   const [staffList, setStaffList] = useState([]);
   const [staffTrigger, setStaffTrigger] = useState(0);
   const [staffForm, setStaffForm] = useState({
@@ -53,20 +49,6 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
     };
     if (activeTab === 'orders') {
       fetchAdminOrders();
-    }
-  }, [activeTab]);
-
-  useEffect(() => {
-    const fetchCarouselImages = async () => {
-      try {
-        const response = await apiClient.get('/carousel-images');
-        setCarouselImages(Array.isArray(response.data) ? response.data : []);
-      } catch (error) {
-        console.error("Failed to fetch carousel images:", error);
-      }
-    };
-    if (activeTab === 'carousel') {
-      fetchCarouselImages();
     }
   }, [activeTab]);
 
@@ -213,49 +195,6 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
     }
   };
 
-  const handleCarouselUpload = async (e) => {
-    e.preventDefault();
-    if (!carouselFiles || carouselFiles.length === 0) {
-      displayAlert('error', 'Choose at least one image file first.');
-      return;
-    }
-
-    setCarouselUploading(true);
-    let successCount = 0;
-    let failCount = 0;
-
-    for (const file of carouselFiles) {
-      const formData = new FormData();
-      formData.append('user_id', adminId);
-      formData.append('image', file);
-      try {
-        const response = await apiClient.post('/carousel-images', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-        setCarouselImages(prev => [...prev, response.data]);
-        successCount++;
-      } catch (err) {
-        failCount++;
-      }
-    }
-
-    setCarouselFiles([]);
-    setCarouselUploading(false);
-    if (failCount === 0) {
-      displayAlert('success', `${successCount} image${successCount !== 1 ? 's' : ''} uploaded successfully!`);
-    } else {
-      displayAlert('error', `${successCount} uploaded, ${failCount} failed. Try again for the failed ones.`);
-    }
-  };
-
-  const handleDeleteCarouselImage = async (id) => {
-    try {
-      await apiClient.delete(`/carousel-images/${id}?user_id=${adminId}`);
-      setCarouselImages(prev => prev.filter(img => img.id !== id));
-      displayAlert('success', 'Carousel image removed.');
-    } catch (err) {
-      displayAlert('error', err.response?.data?.error || 'Failed to delete carousel image.');
-    }
-  };
-
   const handleStaffSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -355,9 +294,6 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
           </div>
 
           <div className="flex bg-gray-100 p-1 rounded-xl w-full md:w-auto overflow-x-auto">
-            <button onClick={() => { setActiveTab('carousel'); setEditingId(null); setSearchQuery(''); }} className={`px-5 py-2 whitespace-nowrap rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${activeTab === 'carousel' ? 'bg-white text-[#f68b1e] shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
-              <ImageIcon className="h-4 w-4" /> Carousel
-            </button>
             <button onClick={() => { setActiveTab('orders'); setEditingId(null); setSearchQuery(''); }} className={`px-5 py-2 whitespace-nowrap rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${activeTab === 'orders' ? 'bg-white text-[#f68b1e] shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
               <Truck className="h-4 w-4" /> Orders
             </button>
@@ -402,63 +338,6 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {activeTab === 'carousel' && (
-            <div className="lg:col-span-3">
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                    <ImageIcon className="h-4 w-4" /> Storefront Carousel Images
-                  </h3>
-                  <span className="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded">{carouselImages.length} image{carouselImages.length !== 1 ? 's' : ''}</span>
-                </div>
-
-                <form onSubmit={handleCarouselUpload} className="mb-3">
-                  <div className="flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-lg p-2">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={(e) => setCarouselFiles(Array.from(e.target.files || []))}
-                      className="flex-grow text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-bold file:bg-gray-900 file:text-white hover:file:bg-[#f68b1e] file:cursor-pointer"
-                    />
-                    <button
-                      type="submit"
-                      disabled={carouselUploading || carouselFiles.length === 0}
-                      className="bg-[#f68b1e] text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-40 flex items-center justify-center gap-1.5 whitespace-nowrap"
-                    >
-                      <PlusCircle className="h-3.5 w-3.5" />
-                      {carouselUploading ? 'Uploading...' : carouselFiles.length > 0 ? `Upload ${carouselFiles.length}` : 'Upload'}
-                    </button>
-                  </div>
-                </form>
-                <p className="text-[11px] text-gray-400 mb-6 leading-relaxed">
-                  For best results on the storefront, use <span className="font-bold text-gray-500">landscape images</span> around <span className="font-bold text-gray-500">1600×900px</span> (16:9), under <span className="font-bold text-gray-500">1–2MB</span> each. You can select and upload several images at once.
-                </p>
-
-                {carouselImages.length === 0 ? (
-                  <div className="text-center py-12 text-gray-400">
-                    <ImageIcon className="h-12 w-12 mx-auto mb-3 opacity-20" />
-                    <p>No carousel images yet. Upload some above.</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                    {carouselImages.map((img) => (
-                      <div key={img.id} className="relative rounded-xl overflow-hidden border border-gray-100 shadow-sm aspect-video bg-gray-50">
-                        <img src={img.image_url} alt="Carousel" className="w-full h-full object-cover" />
-                        <button
-                          onClick={() => handleDeleteCarouselImage(img.id)}
-                          className="absolute top-1.5 right-1.5 bg-black/70 text-white h-6 w-6 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-sm"
-                        >
-                          <X className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
           {activeTab === 'orders' && (
             <div className="lg:col-span-3">
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
@@ -652,7 +531,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
             </>
           )}
 
-          {activeTab !== 'orders' && activeTab !== 'staff' && activeTab !== 'carousel' && (
+          {activeTab !== 'orders' && activeTab !== 'staff' && (
             <>
               <div className="lg:col-span-1">
                 <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm sticky top-24">

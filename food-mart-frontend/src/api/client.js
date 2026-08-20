@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiClient = axios.create({ baseURL: 'https://mini-mart-aw0d.onrender.com', withCredentials: true });
+const apiClient = axios.create({ baseURL: 'http://127.0.0.1/api', withCredentials: true });
 
 apiClient.interceptors.request.use((config) => {
 	const accessToken = localStorage.getItem('foodMartAccessToken');

@@ -25,9 +25,13 @@ def create_user():
     data = request.get_json() or {}
     data.pop("is_admin", None)
     data.pop("is_super_admin", None)
+
+    import json
+    print(f"POST /users accessed this endpoint with {json.dumps(data, indent=2)}")
     try:
         new = UserRepo.new(**data)
     except ValueError as e:
+        print(f"Error: {e}")
         return jsonify({
             "error": "incorrect/incomplete parameters",
             "message": str(e)
