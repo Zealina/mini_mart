@@ -2,44 +2,25 @@
 """Manage products"""
 
 import os
+import uuid
 from flask import (
     jsonify, request, current_app
 )
 from api.v1.views import app_views
 from api.v1.views.auth import admin_required
 from flask_jwt_extended import jwt_required
+from werkzeug.utils import secure_filename
 from repositories.product_repo import ProductRepo
 
 from dotenv import load_dotenv
 load_dotenv()
 
-import cloudinary
-import cloudinary.uploader
 
-cloudinary.config(
-  cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME'),
-  api_key = os.getenv('CLOUDINARY_API_KEY'),
-  api_secret = os.getenv('CLOUDINARY_API_SECRET'),
-  secure = True
-)
-
-allowed_extensions = {
-    ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".tif",
-    ".webp", ".heic", ".heif", ".svg", ".ico", ".jfif", ".avif"
+ALLOWED_EXTENSIONS = {
+    "jpg", "jpeg", "png", "gif", "webp", "svg", "ico"
 }
-
-def save_image(image):
-    """Upload an image directly to Cloudinary and return the secure URL"""
-    ext = os.path.splitext(image.filename)[-1].lower()
-    if ext not in allowed_extensions:
-        return None
-
-    try:
-        upload_result = cloudinary.uploader.upload(image)
-        return upload_result.get("secure_url")
-    except Exception as e:
-        print(f"Cloudinary upload failed: {e}")
-        return None
+UPLOAD_FOLDER = "/var/www/cexpressminimart-uploads/"
+PUBLIC_URL_PREFIX = "/uploads"
 
 @app_views.route('/products', methods=['GET'])
 def get_all_products():
@@ -61,24 +42,50 @@ def get_product(product_id):
 @admin_required()
 def create_product():
     """Create a new product"""
-    image_url = None
-    images = request.files.getlist("images")
+    if 'image' not in request.files:
+        return jsonify({"error": "no image file provided"}), 400
 
-    if images:
-        image = images[0]
-        image_url = save_image(image)
-        if not image_url:
-            return jsonify({"error": "invalid image type or upload failed"}), 400
+    file = request.files['image']
+    if file.filename == '':
+        return jsonify({"error": "no file selected"}), 400
+
+    ext = file.filename.rsplit('.', 1)[1].lower()
+
+    if ext not in ALLOWED_EXTENSIONS:
+        return jsonify({
+            "error": "invalid file type",
+            "message": f"allowed types: {', '.join(sorted(ALLOWED_EXTENSIONS))}"
+        }), 400
+
+    file.seek(0, os.SEEK_END)
+    size = file.tell()
+    file.seek(0)
+    MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024
+    if size > MAX_FILE_SIZE_BYTES:
+        return jsonify({"error": "file too large", "message": "max size is 5MB"}), 400
+
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+    unique_name = f"{uuid.uuid4().hex}.{ext}"
+    safe_name = secure_filename(unique_name)
+    disk_path = os.path.join(UPLOAD_FOLDER, safe_name)
+
+    try:
+        file.save(disk_path)
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "failed to save file", "message": str(e)}), 500
 
     data = request.form.to_dict()
-    if image_url:
-        data["image_url"] = image_url
+    image_url = f"{PUBLIC_URL_PREFIX}/{safe_name}"
+    data["image_url"] = image_url
 
     try:
         new = ProductRepo.new(**data)
     except ValueError as e:
-        return jsonify({"error": str(e)}), 400
-
+        if os.path.exists(disk_path):
+            os.remove(disk_path)
+        return jsonify({"error": "incorrect/incomplete parameters", "message": str(e)}), 400
     return jsonify(new.to_dict()), 201
 
 @app_views.route('/products/<product_id>', methods=['PUT'])

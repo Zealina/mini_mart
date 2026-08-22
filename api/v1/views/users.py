@@ -26,8 +26,6 @@ def create_user():
     data.pop("is_admin", None)
     data.pop("is_super_admin", None)
 
-    import json
-    print(f"POST /users accessed this endpoint with {json.dumps(data, indent=2)}")
     try:
         new = UserRepo.new(**data)
     except ValueError as e:
@@ -36,6 +34,9 @@ def create_user():
             "error": "incorrect/incomplete parameters",
             "message": str(e)
         }), 400
+    from email_service import send_welcome_email
+
+    send_welcome_email(new)
     return jsonify(new.to_dict()), 201
 
 @app_views.route('/users/<user_id>', methods=['PUT'])

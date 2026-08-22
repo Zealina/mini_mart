@@ -66,8 +66,8 @@ export default function App() {
     async function fetchCatalog() {
       try {
         const [prodRes, catRes] = await Promise.all([
-          apiClient.get('/products'),
-          apiClient.get('/categories')
+          apiClient.get('products'),
+          apiClient.get('categories')
         ]);
         setProducts(prodRes.data);
         setCategories(catRes.data);
@@ -80,7 +80,7 @@ export default function App() {
 
   const handleLogout = async () => {
     try {
-      await apiClient.post('/logout').catch(() => {});
+      await apiClient.post('logout').catch(() => {});
     } finally {
       setUser(null);
       setCart([]);

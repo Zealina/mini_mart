@@ -33,3 +33,4 @@ Traceback (most recent call last):
   File "/home/keziah/.venv/lib/python3.12/site-packages/flask_jwt_extended/config.py", line 238, in _secret_key
     raise RuntimeError(
 RuntimeError: JWT_SECRET_KEY or flask SECRET_KEY must be set when using symmetric algorithm "HS256"
+2026-08-22 14:04:39,107 - ERROR - app - Failed to generate invoice for order 11eaa61b-9a5a-4272-9335-018de29e5856: type object 'OrderRepo' has no attribute 'update_invoice_url' [in /home/keziah/mini_mart/api/v1/views/orders.py:279]

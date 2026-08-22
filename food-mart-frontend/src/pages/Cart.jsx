@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Minus, Plus, Trash2, CheckCircle2, AlertCircle, ShoppingBag, ArrowLeft, MapPin, CreditCard, Phone, Landmark } from 'lucide-react';
+import { ShoppingCart, Minus, Plus, Trash2, CheckCircle2, AlertCircle, ShoppingBag, ArrowLeft, MapPin, CreditCard, Phone, Landmark, Upload, FileText, X, Paperclip } from 'lucide-react';
 import apiClient from '../api/client';
+
+const MAX_RECEIPT_SIZE_MB = 10;
+const ACCEPTED_RECEIPT_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'application/pdf'];
 
 export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, user, triggerReload }) {
   const navigate = useNavigate();
@@ -13,6 +16,11 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
   const [contactPhone, setContactPhone] = useState(user?.whatsapp_number || user?.phone_number || '');
 
   const [storeSettings, setStoreSettings] = useState(null);
+
+  // Payment receipt (image or PDF)
+  const [receiptFile, setReceiptFile] = useState(null);
+  const [receiptPreviewUrl, setReceiptPreviewUrl] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -26,6 +34,44 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
     fetchSettings();
   }, []);
 
+  // Clean up the object URL used for image previews
+  useEffect(() => {
+    return () => {
+      if (receiptPreviewUrl) URL.revokeObjectURL(receiptPreviewUrl);
+    };
+  }, [receiptPreviewUrl]);
+
+  const handleReceiptChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!ACCEPTED_RECEIPT_TYPES.includes(file.type)) {
+      setOrderStatus({ type: 'error', message: 'Please upload a valid image (JPG, PNG, WEBP) or PDF file.' });
+      e.target.value = '';
+      return;
+    }
+
+    if (file.size > MAX_RECEIPT_SIZE_MB * 1024 * 1024) {
+      setOrderStatus({ type: 'error', message: `File is too large. Max size is ${MAX_RECEIPT_SIZE_MB}MB.` });
+      e.target.value = '';
+      return;
+    }
+
+    setOrderStatus({ type: '', message: '' });
+
+    if (receiptPreviewUrl) URL.revokeObjectURL(receiptPreviewUrl);
+
+    setReceiptFile(file);
+    setReceiptPreviewUrl(file.type === 'application/pdf' ? null : URL.createObjectURL(file));
+  };
+
+  const clearReceipt = () => {
+    if (receiptPreviewUrl) URL.revokeObjectURL(receiptPreviewUrl);
+    setReceiptFile(null);
+    setReceiptPreviewUrl(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   const handleCheckout = async () => {
     if (!user) {
       setOrderStatus({ type: 'error', message: 'You must be logged in to complete a checkout order.' });
@@ -34,6 +80,11 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
     
     if (!deliveryAddress.trim() || !contactPhone.trim()) {
       setOrderStatus({ type: 'error', message: 'Please provide both a delivery address and contact phone number.' });
+      return;
+    }
+
+    if (!receiptFile) {
+      setOrderStatus({ type: 'error', message: 'Please upload your payment receipt (image or PDF) before confirming.' });
       return;
     }
 
@@ -50,17 +101,22 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
     cart.forEach(item => { orderItems[item.id] = item.quantity; });
 
     try {
-      await apiClient.post('/orders', {
-        user_id: userId,
-        items: orderItems,
-        address: deliveryAddress,
-        phone: contactPhone
+      // Sent as multipart/form-data so the receipt file travels with the order in one request.
+      const payload = new FormData();
+      payload.append('user_id', userId);
+      payload.append('items', JSON.stringify(orderItems));
+      payload.append('address', deliveryAddress);
+      payload.append('phone', contactPhone);
+      payload.append('receipt', receiptFile);
+
+      await apiClient.post('/orders', payload, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
       
       // ✅ TRIGGER RELOAD: Instantly fetch updated inventory stocks
       if(triggerReload) triggerReload(); 
       
-      setOrderStatus({ type: 'success', message: 'Order submitted successfully! Generating your invoice...' });
+      setOrderStatus({ type: 'success', message: 'Order and receipt submitted successfully! Generating your invoice...' });
       
       setTimeout(() => {
         clearCart();
@@ -181,6 +237,55 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
                   <p className="text-[11px] leading-snug text-orange-700 mt-4 font-medium bg-orange-100/50 p-2 rounded">
                     Please transfer the exact total amount to the account above, then click 'Confirm Order'. Your items will be dispatched upon payment confirmation.
                   </p>
+                </div>
+
+                {/* Payment receipt upload */}
+                <div className="mb-6">
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-2 flex items-center gap-1">
+                    <Paperclip className="h-3 w-3" /> Payment Receipt *
+                  </label>
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/heic,image/heif,application/pdf"
+                    onChange={handleReceiptChange}
+                    className="hidden"
+                    id="receipt-upload"
+                  />
+
+                  {!receiptFile ? (
+                    <label
+                      htmlFor="receipt-upload"
+                      className="flex flex-col items-center justify-center gap-2 w-full border-2 border-dashed border-orange-200 rounded-lg py-6 px-4 text-center cursor-pointer hover:border-[#f68b1e] hover:bg-orange-50/50 transition-colors"
+                    >
+                      <Upload className="h-6 w-6 text-orange-300" />
+                      <span className="text-xs font-semibold text-gray-600">Upload proof of transfer</span>
+                      <span className="text-[11px] text-gray-400">JPG, PNG or PDF, up to {MAX_RECEIPT_SIZE_MB}MB</span>
+                    </label>
+                  ) : (
+                    <div className="flex items-center gap-3 border border-gray-200 rounded-lg p-3 bg-gray-50">
+                      {receiptPreviewUrl ? (
+                        <img src={receiptPreviewUrl} alt="Receipt preview" className="w-12 h-12 object-cover rounded-md border border-gray-200 flex-shrink-0" />
+                      ) : (
+                        <div className="w-12 h-12 rounded-md border border-gray-200 bg-white flex items-center justify-center flex-shrink-0">
+                          <FileText className="h-6 w-6 text-red-400" />
+                        </div>
+                      )}
+                      <div className="flex-grow min-w-0">
+                        <p className="text-xs font-semibold text-gray-700 truncate">{receiptFile.name}</p>
+                        <p className="text-[11px] text-gray-400">{(receiptFile.size / (1024 * 1024)).toFixed(2)} MB</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={clearReceipt}
+                        className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors flex-shrink-0"
+                        aria-label="Remove receipt"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex justify-between text-gray-500 text-sm mb-2.5">

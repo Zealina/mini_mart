@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Database, User, LogOut, ShoppingCart, Search, Grid, ShieldCheck, ShoppingBag, ChevronDown, Package, Settings, X, Tag, ChevronLeft, ChevronRight } from 'lucide-react';
+import apiClient from '../api/client';
 
 export default function Storefront({ user, handleLogout, products, categories, addToCart, cartCount }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -8,14 +9,40 @@ export default function Storefront({ user, handleLogout, products, categories, a
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [viewProduct, setViewProduct] = useState(null);
 
-  // ✅ STATE & LOGIC FOR THE HERO SLIDER
   const [currentSlide, setCurrentSlide] = useState(0);
-  
-  const slides = [
+
+  const [slides, setSlides] = useState([
     { id: 1, image: '/slider1.jpeg', alt: 'Everyday Needs Delivered Fast' },
     { id: 2, image: '/slider2.jpeg', alt: '1 Year Anniversary C_Express' },
     { id: 3, image: '/slider3.jpeg', alt: 'Hello July Good Vibes' }
-  ];
+  ]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchSlides = async () => {
+      try {
+        const response = await apiClient.get('carousel-images');
+	const slideLinks = response.data;
+        if (isMounted && Array.isArray(slideLinks) && slideLinks.length > 0) {
+          const dynamicSlides = slideLinks.map((slideLink, index) => ({
+            id: slideLink.id ?? index,
+            image: slideLink.image_url,
+            alt: slideLink.title || `Slide ${index + 1}`
+          }));
+          setSlides(dynamicSlides);
+        }
+      } catch (error) {
+        console.error('Failed to load carousel images, using default slides.', error);
+      }
+    };
+
+    fetchSlides();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -48,7 +75,6 @@ export default function Storefront({ user, handleLogout, products, categories, a
 
       <nav className="bg-white shadow-sm p-3 flex justify-between items-center px-4 sm:px-8 sticky top-0 z-40">
         <Link to="/" className="flex items-center">
-          {/* ✅ FIXED TYPO IN THE IMAGE SRC */}
           <img src="/logo-vertical.png" alt="CEXPRESS MINIMART" className="h-12 object-contain mix-blend-multiply" />
         </Link>
         

@@ -10,8 +10,8 @@ from repositories.carousel_image_repo import CarouselImageRepo
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
 MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024
 
-UPLOAD_FOLDER = os.path.join('api', 'v1', 'static', 'uploads', 'carousel')
-PUBLIC_URL_PREFIX = '/static/uploads/carousel'
+UPLOAD_FOLDER = "/var/www/cexpressminimart-uploads"
+PUBLIC_URL_PREFIX = '/uploads'
 
 
 def _allowed_file(filename):
@@ -58,6 +58,7 @@ def create_carousel_image():
     try:
         file.save(disk_path)
     except Exception as e:
+        print(e)
         return jsonify({"error": "failed to save file", "message": str(e)}), 500
 
     user_id = request.form.get('user_id')
@@ -72,6 +73,7 @@ def create_carousel_image():
         if os.path.exists(disk_path):
             os.remove(disk_path)
         return jsonify({"error": "incorrect/incomplete parameters", "message": str(e)}), 400
+    print(new_image.to_dict())
 
     return jsonify(new_image.to_dict()), 201
 

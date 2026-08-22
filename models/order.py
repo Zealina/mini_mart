@@ -12,14 +12,13 @@ class Order(BaseModel, Base):
 
     user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
     completed = Column(Integer, nullable=False, default=0)
-    
-    # ✅ STRICT DB COLUMNS
     delivery_address = Column(String(255), nullable=True)
     contact_phone = Column(String(50), nullable=True)
     gps_link = Column(String(255), nullable=True) 
-    
-    # ✅ NEW STATUS COLUMN
     status = Column(String(50), default="Pending")
+    payment_proof_url = Column(String(255), nullable=True)
+    invoice_url = Column(String(255), nullable=True)
+    receipt_url = Column(String(255), nullable=True)
 
     user = relationship("User", back_populates="orders")
     order_items = relationship(
@@ -50,7 +49,6 @@ class Order(BaseModel, Base):
         order_dict['delivery_address'] = getattr(self, 'delivery_address', None)
         order_dict['contact_phone'] = getattr(self, 'contact_phone', None)
         order_dict['gps_link'] = getattr(self, 'gps_link', None)
-        # ✅ EXPOSE STATUS TO FRONTEND
         order_dict['status'] = getattr(self, 'status', 'Pending')
         
         if hasattr(self, 'order_items') and self.order_items is not None:

@@ -39,7 +39,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
   useEffect(() => {
     const fetchAdminOrders = async () => {
       try {
-        const response = await apiClient.get('/orders');
+        const response = await apiClient.get('orders');
         let fetchedOrders = Array.isArray(response.data) ? response.data : [];
         fetchedOrders.sort((a, b) => {
           const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
@@ -173,7 +173,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
     if (prodForm.brand) formData.append('brand', prodForm.brand);
     if (prodForm.package_size) formData.append('package_size', prodForm.package_size);
     if (prodForm.description) formData.append('description', prodForm.description);
-    if (prodForm.image_url) formData.append('image_url', prodForm.image_url);
+    if (prodImage) formData.append('image', prodImage);
 
     try {
       if (editingId) {
@@ -185,6 +185,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
       }
       setEditingId(null);
       setProdForm({ name: '', price: '', brand: '', category_id: '', stock: 20, package_size: '', description: '', image_url: '' });
+      setProdImage(null);
       triggerReload();
     } catch (err) {
       displayAlert('error', err.response?.data?.error || 'Product operation failed.');
@@ -199,6 +200,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
       package_size: product.package_size || '', description: product.description || '',
       image_url: product.image_url || ''
     });
+    setProdImage(null);
     setActiveTab('products');
   };
 
@@ -432,7 +434,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                   </div>
                 </form>
                 <p className="text-[11px] text-gray-400 mb-6 leading-relaxed">
-                  For best results on the storefront, use <span className="font-bold text-gray-500">landscape images</span> around <span className="font-bold text-gray-500">1600×900px</span> (16:9), under <span className="font-bold text-gray-500">1–2MB</span> each. You can select and upload several images at once.
+                  For best results on the storefront, use <span className="font-bold text-gray-500">landscape images</span> around <span className="font-bold text-gray-500">1600×900px</span> (16:9), under <span className="font-bold text-gray-500">5MB</span> each. You can select and upload several images at once.
                 </p>
 
                 {carouselImages.length === 0 ? (
@@ -444,7 +446,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                     {carouselImages.map((img) => (
                       <div key={img.id} className="relative rounded-xl overflow-hidden border border-gray-100 shadow-sm aspect-video bg-gray-50">
-                        <img src={img.image_url} alt="Carousel" className="w-full h-full object-cover" />
+                        <img src={"http://127.0.0.1" + img.image_url} alt="Carousel" className="w-full h-full object-cover" />
                         <button
                           onClick={() => handleDeleteCarouselImage(img.id)}
                           className="absolute top-1.5 right-1.5 bg-black/70 text-white h-6 w-6 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-sm"
@@ -687,7 +689,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                           {editingId ? 'Modify Product' : 'Add Product'}
                         </h3>
                         {editingId && (
-                          <button onClick={() => { setEditingId(null); setProdForm({ name: '', price: '', brand: '', category_id: '', stock: 20, package_size: '', description: '', image_url: '' }); }} className="text-xs font-bold text-gray-400 hover:text-gray-600 flex items-center gap-1">
+                          <button onClick={() => { setEditingId(null); setProdForm({ name: '', price: '', brand: '', category_id: '', stock: 20, package_size: '', description: '', image_url: '' }); setProdImage(null); }} className="text-xs font-bold text-gray-400 hover:text-gray-600 flex items-center gap-1">
                             <X className="h-3.5 w-3.5" /> Clear Edit
                           </button>
                         )}
@@ -726,15 +728,26 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                         </div>
                         <div>
                           <label className="block text-xs font-bold text-gray-500 uppercase mb-1 flex items-center gap-1">
-                            <ImageIcon className="h-3.5 w-3.5" /> Product Image URL
+                            <ImageIcon className="h-3.5 w-3.5" /> Product Image
                           </label>
-                          <input
-                            type="url"
-                            placeholder="e.g. https://example.com/image.jpg"
-                            value={prodForm.image_url}
-                            onChange={(e) => setProdForm({ ...prodForm, image_url: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f68b1e]"
-                          />
+                          <div className="flex items-center gap-3">
+                            {(prodImage || prodForm.image_url) && (
+                              <img
+                                src={prodImage ? URL.createObjectURL(prodImage) : prodForm.image_url}
+                                alt="Preview"
+                                className="w-12 h-12 rounded-lg object-cover border border-gray-200 flex-shrink-0"
+                              />
+                            )}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => setProdImage(e.target.files?.[0] || null)}
+                              className="flex-grow text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-bold file:bg-gray-900 file:text-white hover:file:bg-[#f68b1e] file:cursor-pointer"
+                            />
+                          </div>
+                          {editingId && !prodImage && prodForm.image_url && (
+                            <p className="text-[11px] text-gray-400 mt-1.5">Current image shown above. Choose a file only if you want to replace it.</p>
+                          )}
                         </div>
 
                         <button type="submit" className="w-full bg-[#f68b1e] text-white py-2.5 rounded-lg text-sm font-bold hover:bg-orange-600 transition-colors shadow-sm mt-4">
