@@ -94,6 +94,7 @@ class UserRepo:
             "account_name",
         ]
 
+
         for key, value in kwargs.items():
             if key not in allowed_keys:
                 continue
@@ -113,7 +114,6 @@ class UserRepo:
                     other_user.bank_name = getattr(user, "bank_name", "")
                     other_user.account_number = getattr(user, "account_number", "")
                     other_user.account_name = getattr(user, "account_name", "")
-
         storage.save()
         return user
 

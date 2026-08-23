@@ -489,3 +489,7 @@ def send_owner_order_email(order):
         f"New C_Express Minimart Order #{order.id}",
         email_template(content)
     )
+
+def send_reset_password_email(user, reset_token):
+    """Sends reset email"""
+    print(f"The token for {user.email} is {reset_token}")

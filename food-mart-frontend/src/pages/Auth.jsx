@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { CheckCircle2, AlertCircle, Store, Eye, EyeOff } from 'lucide-react';
 import apiClient from '../api/client';
+import { setAuthState } from '../store/authStore';
 
 export default function Auth({ setUser }) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  // mode: 'login' | 'register' | 'forgot' | 'reset'
   const [mode, setMode] = useState('login');
   const isLogin = mode === 'login';
 
@@ -22,11 +23,20 @@ export default function Auth({ setUser }) {
     email: '', password: '', confirm_password: '', first_name: '', last_name: '', whatsapp_number: '', phone_number: '', address: ''
   });
 
-  // Forgot / reset password state
   const [resetEmail, setResetEmail] = useState('');
   const [resetToken, setResetToken] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
+
+  // If the user lands here via the emailed reset link (e.g. /auth?token=...),
+  // pick up the token from the URL and jump straight to the reset form.
+  useEffect(() => {
+    const tokenFromUrl = searchParams.get('token');
+    if (tokenFromUrl) {
+      setResetToken(tokenFromUrl);
+      setMode('reset');
+    }
+  }, [searchParams]);
 
   const switchMode = (nextMode) => {
     setMode(nextMode);
@@ -55,8 +65,7 @@ export default function Auth({ setUser }) {
 
         const actualUser = response.data.user || response.data;
         setUser(actualUser);
-        localStorage.setItem('foodMartAccessToken', response.data.access_token);
-        localStorage.setItem('foodMartUser', JSON.stringify(actualUser));
+        setAuthState({ accessToken: response.data.access_token });
 
         setStatus({ type: 'success', message: 'Logged in successfully!' });
         setTimeout(() => navigate('/'), 1000);
@@ -92,14 +101,11 @@ export default function Auth({ setUser }) {
     setIsSubmitting(true);
 
     try {
-      // Assumes a backend endpoint that emails a reset token/code to the user.
-      // Adjust the path/payload to match your API if different.
       await apiClient.post('/forgot-password', { email: resetEmail });
 
-      setStatus({ type: 'success', message: 'If an account exists for that email, a reset code has been sent.' });
-      setMode('reset');
+      setStatus({ type: 'success', message: 'Kindly check your email for your reset link. Click it to set a new password.' });
     } catch (error) {
-      const errorMsg = error.response?.data?.error || error.response?.data?.message || 'Could not send reset code. Please try again.';
+      const errorMsg = error.response?.data?.error || error.response?.data?.message || 'Could not send reset link. Please try again.';
       setStatus({ type: 'error', message: errorMsg });
     } finally {
       setIsSubmitting(false);
@@ -110,6 +116,11 @@ export default function Auth({ setUser }) {
     e.preventDefault();
     setStatus({ type: '', message: '' });
 
+    if (!resetToken) {
+      setStatus({ type: 'error', message: 'This reset link is invalid or has expired. Please request a new one.' });
+      return;
+    }
+
     if (newPassword !== confirmNewPassword) {
       setStatus({ type: 'error', message: 'Passwords do not match.' });
       return;
@@ -118,22 +129,19 @@ export default function Auth({ setUser }) {
     setIsSubmitting(true);
 
     try {
-      // Assumes a backend endpoint that verifies the token and sets the new password.
-      // Adjust the path/payload to match your API if different.
+      // Backend verifies the token itself, so email is not required here.
       await apiClient.post('/reset-password', {
-        email: resetEmail,
         token: resetToken,
-        new_password: newPassword
+        password: newPassword
       });
 
       setStatus({ type: 'success', message: 'Password reset successfully! You can now log in.' });
       setResetToken('');
       setNewPassword('');
       setConfirmNewPassword('');
-      setFormData(prev => ({ ...prev, email: resetEmail }));
       setTimeout(() => switchMode('login'), 1200);
     } catch (error) {
-      const errorMsg = error.response?.data?.error || error.response?.data?.message || 'Could not reset password. Please check the code and try again.';
+      const errorMsg = error.response?.data?.error || error.response?.data?.message || 'Could not reset password. This link may be invalid or expired.';
       setStatus({ type: 'error', message: errorMsg });
     } finally {
       setIsSubmitting(false);
@@ -295,7 +303,7 @@ export default function Auth({ setUser }) {
               <div className="text-center mb-6">
                 <h2 className="text-2xl font-extrabold text-gray-950">Reset Your Password</h2>
                 <p className="text-xs text-gray-400 mt-1">
-                  Enter your email and we'll send you a reset code
+                  Enter your email and we'll send you a reset link
                 </p>
               </div>
 
@@ -315,7 +323,7 @@ export default function Auth({ setUser }) {
                 </div>
 
                 <button type="submit" disabled={isSubmitting} className="w-full bg-[#f68b1e] text-white py-3 rounded-lg font-bold hover:bg-orange-600 shadow-md transition-all mt-6 flex justify-center items-center">
-                  {isSubmitting ? 'SENDING...' : 'SEND RESET CODE'}
+                  {isSubmitting ? 'SENDING...' : 'SEND RESET LINK'}
                 </button>
 
                 <div className="text-center mt-2">
@@ -337,37 +345,19 @@ export default function Auth({ setUser }) {
               <div className="text-center mb-6">
                 <h2 className="text-2xl font-extrabold text-gray-950">Create New Password</h2>
                 <p className="text-xs text-gray-400 mt-1">
-                  Enter the code we sent to {resetEmail || 'your email'} and choose a new password
+                  Choose a new password for your account
                 </p>
               </div>
 
               <StatusBanner />
 
+              {!resetToken && status.type !== "success" && (
+                <div className="p-4 rounded-lg bg-amber-50 text-amber-700 text-sm mb-6">
+                  This link looks invalid or incomplete. Please request a new reset link.
+                </div>
+              )}
+
               <form onSubmit={handleResetSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Email Address *</label>
-                  <input
-                    required
-                    type="email"
-                    placeholder="example@mail.com"
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f68b1e] text-sm"
-                    value={resetEmail}
-                    onChange={e => setResetEmail(e.target.value)}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Reset Code *</label>
-                  <input
-                    required
-                    type="text"
-                    placeholder="Enter the code from your email"
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f68b1e] text-sm"
-                    value={resetToken}
-                    onChange={e => setResetToken(e.target.value)}
-                  />
-                </div>
-
                 <div>
                   <label className="block text-xs font-bold text-gray-500 uppercase mb-1">New Password *</label>
                   <div className="relative">
@@ -417,7 +407,7 @@ export default function Auth({ setUser }) {
                   )}
                 </div>
 
-                <button type="submit" disabled={isSubmitting} className="w-full bg-[#f68b1e] text-white py-3 rounded-lg font-bold hover:bg-orange-600 shadow-md transition-all mt-6 flex justify-center items-center">
+                <button type="submit" disabled={isSubmitting || !resetToken} className="w-full bg-[#f68b1e] text-white py-3 rounded-lg font-bold hover:bg-orange-600 shadow-md transition-all mt-6 flex justify-center items-center disabled:opacity-50 disabled:cursor-not-allowed">
                   {isSubmitting ? 'RESETTING...' : 'RESET PASSWORD'}
                 </button>
 
@@ -427,7 +417,7 @@ export default function Auth({ setUser }) {
                     onClick={() => switchMode('forgot')}
                     className="text-xs font-semibold text-gray-500 hover:text-[#f68b1e] hover:underline"
                   >
-                    Resend code
+                    Request a new link
                   </button>
                   <button
                     type="button"

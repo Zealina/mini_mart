@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, Lock, AlertTriangle, ArrowLeft, Mail } from 'lucide-react';
 import apiClient from '../api/client';
+import { setAuthState } from '../store/authStore';
 
 export default function AdminLogin({ setUser }) {
   const [email, setEmail] = useState('');
@@ -23,8 +24,7 @@ export default function AdminLogin({ setUser }) {
       // Verify they actually have database admin rights
       if (userData.is_admin == 1 || userData.is_admin === true) {
         setUser(userData);
-        localStorage.setItem('foodMartAccessToken', response.data.access_token);
-        localStorage.setItem('foodMartUser', JSON.stringify(userData));
+        setAuthState({ accessToken: response.data.access_token });
         navigate('/admin');
       } else {
         // If they are a normal user trying to log into the admin portal, boot them out

@@ -55,9 +55,8 @@ export default function Settings({ user, setUser }) {
       const response = await apiClient.put(`/users/${userId}`, payload);
       const updatedUser = response.data;
       
-      // Update global user state & localStorage to lock in the new data
+      // Update global user state (kept in the in-memory auth store, not localStorage)
       setUser(updatedUser);
-      localStorage.setItem('foodMartUser', JSON.stringify(updatedUser));
       
       setStatus({ type: 'success', message: 'Profile updated successfully! Your preferences have been saved.' });
       setPasswordData({ newPassword: '', confirmPassword: '' }); // Clear password fields

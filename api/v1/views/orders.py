@@ -269,9 +269,6 @@ def create_order():
         order.invoice_url = invoice_url
     except Exception as e:
         current_app.logger.error(f"Failed to generate invoice for order {order.id}: {e}")
-    print(order.__dict__)
-    print("----- To json ------")
-    print(json.dumps(order.to_dict()))
     return jsonify(order.to_dict()), 201
 
 @app_views.route('/orders/<order_id>/confirm-payment', methods=['POST'])

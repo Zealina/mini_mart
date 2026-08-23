@@ -11,23 +11,23 @@ from dotenv import load_dotenv
 from werkzeug.exceptions import RequestEntityTooLarge
 import logging
 from logging.handlers import RotatingFileHandler
+from datetime import timedelta
 import os
 
 load_dotenv()
 
 app = Flask(__name__)
 
-CORS(app, supports_credentials=True, origins=["http://localhost", "http://localhost:5173"])
+CORS(app, supports_credentials=True, origins=["http://localhost", "http://localhost:5173", "http://localhost:5000"])
 
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 app.config["JWT_TOKEN_LOCATION"] = ["headers", "cookies"]
 app.config["JWT_ACCESS_COOKIE_NAME"] = "access_token"
 app.config["JWT_REFRESH_COOKIE_NAME"] = "refresh_token"
-
-# ✅ FIX: Allow authentication cookies to be shared across domains (Localhost/Vercel -> Render)
 app.config["JWT_COOKIE_SECURE"] = True
 app.config["JWT_COOKIE_SAMESITE"] = "None"
-
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=15)
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 app.config["JWT_COOKIE_CSRF_PROTECT"] = False
 jwt = JWTManager(app)
 

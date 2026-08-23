@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import apiClient from './api/client';
+import apiClient, { refreshAccessToken } from './api/client';
+import { getAuthState, setAuthState, clearAuth, subscribeAuth } from './store/authStore';
 
 import AdminRoute from './components/AdminRoute';
 import AdminDashboard from './pages/AdminDashboard';
@@ -11,10 +12,41 @@ import Orders from './pages/Orders';
 import Settings from './pages/Settings';
 
 export default function App() {
-  const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem('foodMartUser');
-    return savedUser ? JSON.parse(savedUser) : null;
-  }); 
+  // `user` lives in the shared in-memory auth store (see store/authStore.js),
+  // not localStorage — this keeps App and the axios client (client.js) in
+  // sync on the same source of truth. setUser is a thin wrapper so every
+  // page that already calls the setUser prop keeps working unchanged.
+  const user = useSyncExternalStore(subscribeAuth, () => getAuthState().user);
+  const setUser = (nextUser) => setAuthState({ user: nextUser });
+
+  // Since the access token/user no longer persist across reloads, silently
+  // re-establish the session on mount using the httpOnly refresh-token
+  // cookie. `refresh` only returns an access token, so we follow it with a
+  // "who am I" call to repopulate the user.
+  // ASSUMPTION: adjust the '/me' path below if your backend exposes it
+  // under a different route.
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        await refreshAccessToken();
+        const meResponse = await apiClient.get('/me');
+        if (!cancelled) {
+          setUser(meResponse.data.user || meResponse.data);
+        }
+      } catch (err) {
+        // No valid refresh-token cookie, or /me failed — nothing to restore.
+        if (!cancelled) clearAuth();
+      } finally {
+        if (!cancelled) setAuthChecked(true);
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, []);
   
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -82,21 +114,10 @@ export default function App() {
     try {
       await apiClient.post('logout').catch(() => {});
     } finally {
-      setUser(null);
+      clearAuth();
       setCart([]);
-      localStorage.removeItem('foodMartUser');
-      localStorage.removeItem('foodMartAccessToken');
     }
   };
-
-  useEffect(() => {
-    try {
-      if (user) localStorage.setItem('foodMartUser', JSON.stringify(user));
-      else localStorage.removeItem('foodMartUser');
-    } catch (e) {
-      console.warn('Failed to persist user', e);
-    }
-  }, [user]);
 
   const addToCart = (product) => {
     setCart(prev => {
@@ -134,6 +155,14 @@ export default function App() {
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f1f1f2]">
+        <span className="text-sm font-medium text-gray-400">Loading...</span>
+      </div>
+    );
+  }
+
   return (
     <Router>
       <Routes>
@@ -150,7 +179,7 @@ export default function App() {
           path="/admin" 
           element={
             <AdminRoute user={user}>
-              <AdminDashboard user={user} categories={categories} products={products} triggerReload={triggerReload} />
+              <AdminDashboard user={user} categories={categories} products={products} triggerReload={triggerReload} handleLogout={handleLogout} />
             </AdminRoute>
           } 
         />
