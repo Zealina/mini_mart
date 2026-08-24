@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getAuthState, setAuthState, clearAuth } from '../store/authStore';
 
-const baseURL = "http://localhost/api";
+const baseURL = "/api";
 const apiClient = axios.create({ baseURL: baseURL, withCredentials: true });
 const refreshClient = axios.create({baseURL: baseURL, withCredentials: true});
 

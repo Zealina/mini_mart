@@ -18,7 +18,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-CORS(app, supports_credentials=True, origins=["http://localhost", "http://localhost:5173", "http://localhost:5000"])
+CORS(app, supports_credentials=True, origins=["https://cexpressminimart.ng"])
 
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 app.config["JWT_TOKEN_LOCATION"] = ["headers", "cookies"]
