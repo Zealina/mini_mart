@@ -34,3 +34,13 @@ Traceback (most recent call last):
     raise RuntimeError(
 RuntimeError: JWT_SECRET_KEY or flask SECRET_KEY must be set when using symmetric algorithm "HS256"
 2026-08-22 14:04:39,107 - ERROR - app - Failed to generate invoice for order 11eaa61b-9a5a-4272-9335-018de29e5856: type object 'OrderRepo' has no attribute 'update_invoice_url' [in /home/keziah/mini_mart/api/v1/views/orders.py:279]
+2026-08-23 21:59:17,263 - ERROR - app - Failed to generate invoice for order d0312f69-a18c-46f5-8e39-461a22c78a7d: name 'UserRepo' is not defined [in /home/keziah/mini_mart/api/v1/views/orders.py:533]
+2026-08-23 22:06:31,554 - ERROR - app - Failed to generate invoice for order 1b1f3f50-6f64-421c-9fc5-b535f82ab975: 'Order' object has no attribute 'items' [in /home/keziah/mini_mart/api/v1/views/orders.py:534]
+2026-08-23 22:11:10,029 - ERROR - app - Failed to generate invoice for order 826e304e-db6b-40fc-944b-5ce492665769: 'OrderItem' object has no attribute 'price' [in /home/keziah/mini_mart/api/v1/views/orders.py:534]
+2026-08-23 22:17:55,741 - ERROR - app - Failed to generate invoice for order 7eb82fb3-951d-4237-af58-c8e597316b71: 'Order' object has no attribute 'total' [in /home/keziah/mini_mart/api/v1/views/orders.py:534]
+2026-08-23 22:25:20,313 - ERROR - app - Failed to generate invoice for order ca4b6b92-d3e1-46a4-8f14-d573d0b6bb1b: 'User' object has no attribute 'name' [in /home/keziah/mini_mart/api/v1/views/orders.py:534]
+2026-08-23 22:33:01,509 - ERROR - app - Failed to generate invoice for order 179996be-9d60-449e-8390-d058eae0dda3: 'User' object has no attribute 'name' [in /home/keziah/mini_mart/api/v1/views/orders.py:534]
+2026-08-23 22:35:22,141 - ERROR - app - Failed to generate invoice for order ac6117f7-0e71-4d67-90d8-52e1ec719a54: 'User' object has no attribute 'name' [in /home/keziah/mini_mart/api/v1/views/orders.py:534]
+2026-08-23 22:43:35,297 - ERROR - app - Failed to generate invoice for order d12b05f8-4adb-4e2f-adac-1160f8969ef3: 'User' object has no attribute 'name' [in /home/keziah/mini_mart/api/v1/views/orders.py:534]
+2026-08-24 00:59:55,716 - ERROR - app - Failed to generate receipt for order 75f194f5-1448-42e3-8f8a-4d25ee95344b: name 'user' is not defined [in /home/keziah/mini_mart/api/v1/views/orders.py:558]
+2026-08-24 02:02:31,631 - ERROR - app - Failed to generate receipt for order ac6117f7-0e71-4d67-90d8-52e1ec719a54: HTTPSConnectionPool(host='api.sendinblue.com', port=443): Max retries exceeded with url: /v3/smtp/email (Caused by NameResolutionError("HTTPSConnection(host='api.sendinblue.com', port=443): Failed to resolve 'api.sendinblue.com' ([Errno -3] Temporary failure in name resolution)")) [in /home/keziah/mini_mart/api/v1/views/orders.py:563]

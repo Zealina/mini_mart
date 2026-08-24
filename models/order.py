@@ -45,7 +45,6 @@ class Order(BaseModel, Base):
     def to_dict(self):
         """Override to_dict to explicitly guarantee delivery details go to React"""
         order_dict = super().to_dict()
-        
         order_dict['delivery_address'] = getattr(self, 'delivery_address', None)
         order_dict['contact_phone'] = getattr(self, 'contact_phone', None)
         order_dict['gps_link'] = getattr(self, 'gps_link', None)
@@ -53,5 +52,6 @@ class Order(BaseModel, Base):
         
         if hasattr(self, 'order_items') and self.order_items is not None:
             order_dict['order_items'] = [item.to_dict() for item in self.order_items]
-            
+        if hasattr(self, "user") and self.user is not None:
+            order_dict["user"] = self.user.to_dict()
         return order_dict

@@ -122,6 +122,28 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
     }
   };
 
+  const handleConfirmPayment = async (orderId) => {
+    const confirmedBy = actualUser?.first_name || actualUser?.email || 'Admin';
+    try {
+      await apiClient.put(`/orders/${orderId}/confirm-payment`, { confirmed_by: confirmedBy });
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, payment_confirmed: true, payment_confirmed_by: confirmedBy } : o));
+      setViewOrder(prev => (prev && prev.id === orderId) ? { ...prev, payment_confirmed: true, payment_confirmed_by: confirmedBy } : prev);
+      displayAlert('success', 'Payment confirmed!');
+    } catch (err) {
+      displayAlert('error', err.response?.data?.error || 'Failed to confirm payment.');
+    }
+  };
+
+  const getCustomerName = (order) => {
+    const first = order.user?.first_name || order.customer_first_name || order.customer_name;
+    const last = order.user?.last_name || order.customer_last_name || '';
+    const name = [first, last].filter(Boolean).join(' ').trim();
+    return name || 'Guest Customer';
+  };
+
+  const getCustomerEmail = (order) =>
+    order.user?.email || order.customer_email || order.email || 'No email on file';
+
   const renderStatusBadge = (orderStatus) => {
     switch(orderStatus) {
       case 'Delivered': return <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-black uppercase">Delivered</span>;
@@ -297,8 +319,10 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
   const processedOrders = orders.map((o, idx) => ({ ...o, orderNumber: orders.length - idx }));
 
   const filteredOrders = processedOrders.filter(o =>
-    o.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (o.id || '').toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
     (o.contact_phone && o.contact_phone.includes(searchQuery)) ||
+    getCustomerName(o).toLowerCase().includes(searchQuery.toLowerCase()) ||
+    getCustomerEmail(o).toLowerCase().includes(searchQuery.toLowerCase()) ||
     o.orderNumber.toString().includes(searchQuery)
   );
 
@@ -481,9 +505,11 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                       <thead>
                         <tr className="border-b border-gray-200 text-gray-500 font-bold bg-gray-50/50 uppercase text-xs tracking-wider">
                           <th className="p-4 rounded-tl-lg">Order Number</th>
+                          <th className="p-4">Customer</th>
                           <th className="p-4">Items</th>
                           <th className="p-4">Contact Number</th>
-                          <th className="p-4">Address Details</th>
+                          <th className="p-4">Status</th>
+                          <th className="p-4">Payment</th>
                           <th className="p-4 text-right rounded-tr-lg">Action</th>
                         </tr>
                       </thead>
@@ -492,7 +518,11 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                           <tr key={order.id} className="hover:bg-orange-50/30 transition-colors group">
                             <td className="p-4">
                               <div className="font-black text-gray-900 text-sm">Order #{order.orderNumber}</div>
-                              <div className="font-mono text-[10px] text-gray-400 mt-0.5">UUID: {order.id.substring(0, 8)}</div>
+                              <div className="font-mono text-[10px] text-gray-400 mt-0.5">UUID: {(order.id || '').toString().substring(0, 8)}</div>
+                            </td>
+                            <td className="p-4">
+                              <div className="font-bold text-gray-900 text-sm leading-tight">{getCustomerName(order)}</div>
+                              <div className="text-xs text-gray-400 mt-0.5 truncate max-w-[180px]">{getCustomerEmail(order)}</div>
                             </td>
                             <td className="p-4 font-bold text-gray-800">
                               <span className="bg-gray-100 text-gray-700 px-2.5 py-1 rounded text-xs">
@@ -503,14 +533,25 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                               {order.contact_phone || 'No phone'}
                             </td>
                             <td className="p-4">
-                              {order.gps_link ? (
-                                <span className="text-blue-600 font-bold flex items-center gap-1 text-xs bg-blue-50 px-2.5 py-1 rounded w-max border border-blue-100">
-                                  <Navigation className="h-3 w-3" /> GPS Location Attached
-                                </span>
+                              {renderStatusBadge(order.status)}
+                            </td>
+                            <td className="p-4">
+                              {order.payment_confirmed ? (
+                                <div>
+                                  <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-black uppercase flex items-center gap-1 w-max">
+                                    <CheckCircle2 className="h-3 w-3" /> Confirmed
+                                  </span>
+                                  {order.payment_confirmed_by && (
+                                    <span className="block text-[10px] text-gray-400 mt-1">by {order.payment_confirmed_by}</span>
+                                  )}
+                                </div>
                               ) : (
-                                <span className="text-gray-500 text-xs truncate max-w-[200px] inline-block font-medium">
-                                  {order.delivery_address || 'Not Provided'}
-                                </span>
+                                <button
+                                  onClick={() => handleConfirmPayment(order.id)}
+                                  className="text-[10px] font-black uppercase bg-green-50 text-green-700 border border-green-200 px-2.5 py-1.5 rounded-lg hover:bg-green-600 hover:text-white transition-colors"
+                                >
+                                  Confirm Payment
+                                </button>
                               )}
                             </td>
                             <td className="p-4 text-right">
@@ -877,7 +918,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                 </h3>
                 <div className="flex items-center gap-2 mt-1">
                   {renderStatusBadge(viewOrder.status)}
-                  <p className="text-xs text-gray-400 font-mono">UUID: {viewOrder.id.substring(0, 8)}</p>
+                  <p className="text-xs text-gray-400 font-mono">UUID: {(viewOrder.id || '').toString().substring(0, 8)}</p>
                 </div>
               </div>
               <button
@@ -893,6 +934,22 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                 <h4 className="text-xs font-bold text-[#f68b1e] uppercase tracking-wider border-b border-orange-100 pb-2">Customer & Delivery Info</h4>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex items-start gap-3">
+                    <User className="h-4 w-4 text-orange-500 mt-0.5" />
+                    <div>
+                      <span className="block text-xs font-bold text-gray-400 uppercase">Customer Name</span>
+                      <span className="text-sm font-bold text-gray-900 leading-none">{getCustomerName(viewOrder)}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <FileText className="h-4 w-4 text-orange-500 mt-0.5" />
+                    <div>
+                      <span className="block text-xs font-bold text-gray-400 uppercase">Customer Email</span>
+                      <span className="text-sm font-bold text-gray-900 leading-none break-all">{getCustomerEmail(viewOrder)}</span>
+                    </div>
+                  </div>
+
                   <div className="flex items-start gap-3">
                     <Phone className="h-4 w-4 text-orange-500 mt-0.5" />
                     <div>
@@ -953,6 +1010,27 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                     );
                   })}
                 </div>
+              </div>
+
+              <div className="bg-gray-50 p-4 border-t border-gray-100 rounded-xl">
+                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Payment Verification</h4>
+                {viewOrder.payment_confirmed ? (
+                  <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+                    <span className="flex items-center gap-2 text-green-700 font-black text-xs uppercase">
+                      <CheckCircle2 className="h-4 w-4" /> Payment Confirmed
+                    </span>
+                    {viewOrder.payment_confirmed_by && (
+                      <span className="text-[11px] text-green-700/70 font-medium">by {viewOrder.payment_confirmed_by}</span>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => handleConfirmPayment(viewOrder.id)}
+                    className="w-full bg-green-600 text-white text-xs font-black uppercase py-2.5 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <CheckCircle2 className="h-4 w-4" /> Confirm Payment
+                  </button>
+                )}
               </div>
 
               <div className="bg-gray-50 p-4 border-t border-gray-100">
