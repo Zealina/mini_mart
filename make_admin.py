@@ -13,7 +13,7 @@ uri = f"mysql+pymysql://{user}:{pwd}@{host}/{db}"
 engine = create_engine(uri)
 
 # --- EDIT THIS LINE to the email you registered on your frontend ---
-TARGET_EMAIL = "kbabs360@gmail.com"
+TARGET_EMAIL = "eresecaleb012@gmail.com"
 
 with engine.connect() as conn:
     print("Connecting to Aiven Cloud Database...")

@@ -350,8 +350,8 @@ def _draw_footer(c, y):
     y -= 6 * mm
 
     columns = [
-        ("VISIT US", ["14B Allen Avenue", "Ikeja, Lagos"]),
-        ("REACH US", ["+234 803 555 0199", "hello@cexpressminimart.ng"]),
+        ("VISIT US", ["Shop 59, Farmers block, Karmo district market", "Abuja, FCT"]),
+        ("REACH US", ["+234 811 547 4133", "cexpressminimart0112@gmail.com"]),
         ("SHOP ONLINE", ["cexpressminimart.ng", "@cexpressminimart"]),
     ]
     label_y = y
