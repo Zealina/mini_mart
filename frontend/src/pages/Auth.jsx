@@ -169,17 +169,17 @@ export default function Auth({ setUser }) {
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden mb-6">
 
         {(mode === 'login' || mode === 'register') && (
-          <div className="flex border-b border-gray-100">
+          <div className="flex flex-nowrap overflow-x-auto border-b border-gray-100">
             <button
               type="button"
-              className={`flex-1 py-4 text-center font-bold text-xs tracking-wider uppercase transition-colors ${mode === 'login' ? 'bg-[#f68b1e] text-white' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
+              className={`min-w-[8rem] flex-1 whitespace-nowrap py-4 text-center font-bold text-xs tracking-wider uppercase transition-colors ${mode === 'login' ? 'bg-[#f68b1e] text-white' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
               onClick={() => switchMode('login')}
             >
               Log In
             </button>
             <button
               type="button"
-              className={`flex-1 py-4 text-center font-bold text-xs tracking-wider uppercase transition-colors ${mode === 'register' ? 'bg-[#f68b1e] text-white' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
+              className={`min-w-[8rem] flex-1 whitespace-nowrap py-4 text-center font-bold text-xs tracking-wider uppercase transition-colors ${mode === 'register' ? 'bg-[#f68b1e] text-white' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
               onClick={() => switchMode('register')}
             >
               Register Account
@@ -187,7 +187,7 @@ export default function Auth({ setUser }) {
           </div>
         )}
 
-        <div className="p-8">
+        <div className="p-4 sm:p-8">
 
           {/* ---------- LOGIN / REGISTER ---------- */}
           {(mode === 'login' || mode === 'register') && (
@@ -203,7 +203,7 @@ export default function Auth({ setUser }) {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 {!isLogin && (
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-gray-500 uppercase mb-1">First Name *</label>
                       <input required type="text" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f68b1e] text-sm" value={formData.first_name} onChange={e => setFormData({...formData, first_name: e.target.value})} />
@@ -411,7 +411,7 @@ export default function Auth({ setUser }) {
                   {isSubmitting ? 'RESETTING...' : 'RESET PASSWORD'}
                 </button>
 
-                <div className="text-center mt-2 flex justify-center gap-4">
+                <div className="text-center mt-2 flex flex-col md:flex-row justify-center gap-4">
                   <button
                     type="button"
                     onClick={() => switchMode('forgot')}

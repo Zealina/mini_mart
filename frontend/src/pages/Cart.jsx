@@ -132,7 +132,7 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
   return (
     <div className="min-h-screen bg-[#f1f1f2] font-sans text-[#282828] flex flex-col">
       <nav className="bg-white shadow-sm p-4 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
           <Link to="/" className="flex items-center gap-2 text-gray-500 hover:text-[#f68b1e] font-medium transition-colors">
             <ArrowLeft className="h-5 w-5" /> Back to Shopping
           </Link>
@@ -164,7 +164,7 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
           <div className="flex flex-col lg:flex-row gap-8">
             <div className="flex-grow space-y-4">
               {cart.map(item => (
-                <div key={item.id} className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-4 shadow-sm">
+                <div key={item.id} className="bg-white rounded-xl border border-gray-100 p-4 flex flex-col md:flex-row md:items-center gap-4 shadow-sm">
                   <div className="w-20 h-20 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100 flex-shrink-0 overflow-hidden">
                     {item.image_url ? (
                       <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
@@ -178,7 +178,7 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
                     <p className="text-gray-900 font-bold mt-1 text-sm">₦{parseFloat(item.price).toLocaleString()}</p>
                   </div>
                   
-                  <div className="flex flex-col sm:flex-row items-center gap-3">
+                  <div className="flex flex-col md:flex-row items-center gap-3">
                     <div className="flex items-center gap-2 border border-gray-200 rounded-lg bg-gray-50 p-1">
                       <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-1.5 hover:text-[#f68b1e] transition-colors"><Minus className="h-3.5 w-3.5" /></button>
                       <span className="w-6 text-center text-xs font-semibold">{item.quantity}</span>
@@ -224,12 +224,12 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
                   </h4>
                   {storeSettings ? (
                     <div className="space-y-1.5 text-sm text-orange-950">
-                      <p className="flex justify-between"><span className="text-orange-700/80 font-semibold">Bank:</span> {storeSettings.bank_name || 'Pending Setup'}</p>
-                      <p className="flex justify-between items-center">
+                      <p className="flex flex-col md:flex-row justify-between gap-1"><span className="text-orange-700/80 font-semibold">Bank:</span> {storeSettings.bank_name || 'Pending Setup'}</p>
+                      <p className="flex flex-col md:flex-row justify-between items-start md:items-center gap-1">
                         <span className="text-orange-700/80 font-semibold">Account:</span>
                         <span className="font-mono font-bold text-base tracking-wider bg-white px-2 py-0.5 rounded border border-orange-200">{storeSettings.account_number || 'N/A'}</span>
                       </p>
-                      <p className="flex justify-between"><span className="text-orange-700/80 font-semibold">Name:</span> <span className="text-right">{storeSettings.account_name || 'N/A'}</span></p>
+                      <p className="flex flex-col md:flex-row justify-between gap-1"><span className="text-orange-700/80 font-semibold">Name:</span> <span className="text-right">{storeSettings.account_name || 'N/A'}</span></p>
                     </div>
                   ) : (
                     <p className="text-sm text-orange-800 animate-pulse">Loading payment details...</p>

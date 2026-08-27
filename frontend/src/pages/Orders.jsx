@@ -62,7 +62,7 @@ export default function Orders({ user, products }) {
   return (
     <div className="min-h-screen bg-[#f1f1f2] font-sans text-[#282828] flex flex-col relative pb-12">
       <nav className="bg-white shadow-sm p-4 sticky top-0 z-40">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
           <Link to="/" className="flex items-center gap-2 text-gray-500 hover:text-[#f68b1e] font-medium transition-colors">
             <ArrowLeft className="h-5 w-5" /> Back to Storefront
           </Link>
@@ -97,7 +97,7 @@ export default function Orders({ user, products }) {
                   className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-md hover:border-orange-100 transition-all cursor-pointer group"
                   onClick={() => setSelectedOrder({ ...order, orderNumber })}
                 >
-                  <div className="flex justify-between items-start border-b border-gray-50 pb-4 mb-4">
+                  <div className="flex flex-col md:flex-row justify-between items-start border-b border-gray-50 pb-4 mb-4 gap-3">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         <span className="bg-[#f68b1e] text-white text-xs font-black px-2 py-0.5 rounded uppercase tracking-wider">
@@ -112,7 +112,7 @@ export default function Orders({ user, products }) {
                     {/* ✅ DYNAMIC BADGE RENDERED HERE */}
                     {renderStatusBadge(order.status)}
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
                     <div className="text-sm text-gray-500">
                       Contains <span className="font-bold text-gray-800">{getItemsCount(order)} items</span>
                     </div>
@@ -133,10 +133,10 @@ export default function Orders({ user, products }) {
           onClick={() => setSelectedOrder(null)}
         >
           <div 
-            className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative" 
+            className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6 shadow-2xl relative" 
             onClick={e => e.stopPropagation()}
           >
-            <div className="bg-gradient-to-r from-gray-50 to-white p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 z-10">
+            <div className="bg-gradient-to-r from-gray-50 to-white p-4 sm:p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sticky top-0 z-10">
               <div>
                 <div className="flex items-center gap-3">
                   <h3 className="text-xl font-black text-gray-900 flex items-center gap-2">
@@ -154,7 +154,7 @@ export default function Orders({ user, products }) {
               </button>
             </div>
 
-            <div className="p-6 space-y-6">
+            <div className="space-y-6">
               <div className="bg-orange-50/50 border border-orange-100 rounded-xl p-5 space-y-4 shadow-inner">
                 <h4 className="text-xs font-bold text-[#f68b1e] uppercase tracking-wider border-b border-orange-100 pb-2">Delivery Instructions</h4>
                 

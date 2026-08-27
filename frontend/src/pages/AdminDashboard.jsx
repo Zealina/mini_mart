@@ -342,7 +342,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900 pb-12">
-      <nav className="bg-gray-950 text-white shadow-md p-3 flex justify-between items-center px-4 sm:px-8 sticky top-0 z-40">
+      <nav className="bg-gray-950 text-white shadow-md p-3 flex flex-col md:flex-row justify-between items-center gap-3 px-4 sm:px-8 sticky top-0 z-40">
         <div className="flex items-center gap-3">
           <img src="/logo-circular.png" alt="C_Express" className="h-10 w-10 rounded-full object-contain bg-white" />
           <div>
@@ -379,7 +379,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
             <p className="text-sm text-gray-500">Manage products, categories, and fulfill incoming orders.</p>
           </div>
 
-          <div className="flex bg-gray-100 p-1 rounded-xl w-full md:w-auto overflow-x-auto">
+          <div className="flex flex-nowrap bg-gray-100 p-1 rounded-xl w-full md:w-auto overflow-x-auto">
             <button onClick={() => { setActiveTab('carousel'); setEditingId(null); setSearchQuery(''); }} className={`px-5 py-2 whitespace-nowrap rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${activeTab === 'carousel' ? 'bg-white text-[#f68b1e] shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
               <ImageIcon className="h-4 w-4" /> Carousel
             </button>
@@ -466,7 +466,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                     <p>No carousel images yet. Upload some above.</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {carouselImages.map((img) => (
                       <div key={img.id} className="relative rounded-xl overflow-hidden border border-gray-100 shadow-sm aspect-video bg-gray-50">
                         <img src={"http://127.0.0.1" + img.image_url} alt="Carousel" className="w-full h-full object-cover" />
@@ -500,7 +500,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                     <p>{searchQuery ? "No matching orders found." : "No incoming orders found in the database."}</p>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto w-full">
                     <table className="w-full text-left border-collapse text-sm">
                       <thead>
                         <tr className="border-b border-gray-200 text-gray-500 font-bold bg-gray-50/50 uppercase text-xs tracking-wider">
@@ -584,7 +584,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                   </p>
 
                   <form onSubmit={handleStaffSubmit} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-xs font-bold text-gray-500 uppercase mb-1">First Name *</label>
                         <input required type="text" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f68b1e]" value={staffForm.first_name} onChange={e => setStaffForm({ ...staffForm, first_name: e.target.value })} />
@@ -634,7 +634,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                   {filteredStaff.length === 0 ? (
                     <div className="text-center py-8 text-gray-400">No staff found matching "{searchQuery}".</div>
                   ) : (
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto w-full">
                       <table className="w-full text-left border-collapse text-sm">
                         <thead>
                           <tr className="border-b border-gray-100 text-gray-400 font-semibold">
@@ -739,7 +739,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                           <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Product Title *</label>
                           <input required type="text" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f68b1e]" value={prodForm.name} onChange={e => setProdForm({ ...prodForm, name: e.target.value })} />
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                           <div>
                             <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Price (₦) *</label>
                             <input required type="number" step="0.01" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f68b1e]" value={prodForm.price} onChange={e => setProdForm({ ...prodForm, price: e.target.value })} />
@@ -749,7 +749,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                             <input required type="number" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f68b1e]" value={prodForm.stock} onChange={e => setProdForm({ ...prodForm, stock: e.target.value })} />
                           </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                           <div>
                             <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Category Link *</label>
                             <select required className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f68b1e]" value={prodForm.category_id} onChange={e => setProdForm({ ...prodForm, category_id: e.target.value })}>
@@ -841,7 +841,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                       {filteredProducts.length === 0 ? (
                         <div className="text-center py-8 text-gray-400">No products found matching "{searchQuery}".</div>
                       ) : (
-                        <div className="overflow-x-auto">
+                        <div className="overflow-x-auto w-full">
                           <table className="w-full text-left border-collapse text-sm">
                             <thead>
                               <tr className="border-b border-gray-100 text-gray-400 font-semibold">
@@ -908,10 +908,10 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
           onClick={() => setViewOrder(null)}
         >
           <div
-            className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative"
+            className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6 shadow-2xl relative"
             onClick={e => e.stopPropagation()}
           >
-            <div className="bg-gray-950 p-6 flex justify-between items-center sticky top-0 z-10">
+            <div className="bg-gray-950 p-4 sm:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sticky top-0 z-10">
               <div>
                 <h3 className="text-lg font-black text-white flex items-center gap-2">
                   Dispatch Invoice <span className="text-[#f68b1e]">#{viewOrder.orderNumber}</span>
@@ -929,11 +929,11 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
               </button>
             </div>
 
-            <div className="p-6 space-y-6">
+            <div className="space-y-6">
               <div className="bg-orange-50/50 border border-orange-100 rounded-xl p-5 space-y-4">
                 <h4 className="text-xs font-bold text-[#f68b1e] uppercase tracking-wider border-b border-orange-100 pb-2">Customer & Delivery Info</h4>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-start gap-3">
                     <User className="h-4 w-4 text-orange-500 mt-0.5" />
                     <div>

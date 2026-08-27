@@ -70,7 +70,7 @@ export default function Settings({ user, setUser }) {
   return (
     <div className="min-h-screen bg-[#f1f1f2] font-sans text-[#282828] flex flex-col pb-12">
       <nav className="bg-white shadow-sm p-4 sticky top-0 z-50">
-        <div className="max-w-3xl mx-auto flex items-center justify-between">
+        <div className="max-w-3xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
           <Link to="/" className="flex items-center gap-2 text-gray-500 hover:text-[#f68b1e] font-medium transition-colors">
             <ArrowLeft className="h-5 w-5" /> Back to Storefront
           </Link>
@@ -93,7 +93,7 @@ export default function Settings({ user, setUser }) {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           
           {/* Read-Only Profile Header */}
-          <div className="bg-gray-50 p-6 border-b border-gray-100 flex items-center gap-4">
+          <div className="bg-gray-50 p-6 border-b border-gray-100 flex flex-col md:flex-row items-center gap-4">
             <div className="h-16 w-16 bg-gradient-to-br from-[#f68b1e] to-orange-400 text-white rounded-full flex items-center justify-center text-2xl font-black shadow-inner">
               {actualUser.first_name?.charAt(0).toUpperCase()}
             </div>

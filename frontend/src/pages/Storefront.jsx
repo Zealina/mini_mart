@@ -73,7 +73,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
         </div>
       )}
 
-      <nav className="bg-white shadow-sm p-3 flex justify-between items-center px-4 sm:px-8 sticky top-0 z-40">
+      <nav className="bg-white shadow-sm p-3 flex flex-col md:flex-row justify-between items-center gap-3 px-4 sm:px-8 sticky top-0 z-40">
         <Link to="/" className="flex items-center">
           <img src="/logo-vertical.png" alt="CEXPRESS MINIMART" className="h-12 object-contain mix-blend-multiply" />
         </Link>
@@ -218,7 +218,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
           </div>
 
           <div className="flex-grow">
-            <div className="mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
+            <div className="mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-2 border-b border-gray-100 pb-4">
               <h2 className="text-xl font-bold text-gray-800">
                 {selectedCategory ? categories.find(c => c.id === selectedCategory)?.name : 'All Products'}
               </h2>
@@ -231,7 +231,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
                 <h3 className="text-lg font-bold text-gray-700">No Products Found</h3>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredProducts.map(product => (
                   <div 
                     key={product.id} 
@@ -283,7 +283,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
           onClick={() => setViewProduct(null)}
         >
           <div 
-            className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col md:flex-row relative" 
+            className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6 shadow-2xl flex flex-col md:flex-row relative" 
             onClick={e => e.stopPropagation()}
           >
             <button 
