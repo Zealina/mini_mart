@@ -14,7 +14,6 @@ class OrderRepo:
         if not items or not isinstance(items, dict):
             raise ValueError("Order items must be provided as a dict {product_id: quantity}")
 
-        # ✅ VERIFY STOCK BEFORE CREATING ORDER
         for product_id, quantity in items.items():
             if isinstance(quantity, bool) or not isinstance(quantity, int) or quantity <= 0:
                 raise ValueError("Quantity must be a positive integer")
@@ -24,16 +23,19 @@ class OrderRepo:
             if product.stock < quantity:
                 raise ValueError(f"Insufficient stock for {product.name}. Only {product.stock} left.")
 
-        # Create the order
+        if not kwargs.get("payment_proof_url"):
+            raise ValueError("Payment proof is required")
+        if not kwargs.get("delivery_address"):
+            raise ValueError("Delivery address is required")
+        if not kwargs.get("contact_phone"):
+            raise ValueError("Contact phone is required")
         order = Order(user_id=user_id, **kwargs)
         order.save()
         storage.save()
 
-        # Save order items AND deduct from warehouse stock
         for product_id, quantity in items.items():
             product = storage.get(Product, product_id)
             
-            # ✅ DEDUCT THE STOCK
             product.stock -= quantity
             product.save()
 
@@ -57,7 +59,6 @@ class OrderRepo:
         if not order:
             return False
             
-        # ✅ RESTOCK IF CANCELLED BY ADMIN
         for item in order.order_items:
             product = storage.get(Product, item.product_id)
             if product: 
@@ -97,6 +98,26 @@ class OrderRepo:
         if not order:
             return False
         order.status = new_status
+        order.save()
+        storage.save()
+        return True
+
+    @classmethod
+    def update_invoice_url(cls, order_id: str, new_url: str) -> bool:
+        order = cls.get(order_id)
+        if not order:
+            return False
+        order.invoice_url = new_url
+        order.save()
+        storage.save()
+        return True
+
+    @classmethod
+    def update_receipt_url(cls, order_id: str, new_url: str) -> bool:
+        order = cls.get(order_id)
+        if not order:
+            return False
+        order.receipt_url = new_url
         order.save()
         storage.save()
         return True

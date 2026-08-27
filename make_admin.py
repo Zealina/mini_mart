@@ -1,5 +1,5 @@
 import os
-from dotenv_vault import load_dotenv
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 
 load_dotenv()
@@ -13,11 +13,11 @@ uri = f"mysql+pymysql://{user}:{pwd}@{host}/{db}"
 engine = create_engine(uri)
 
 # --- EDIT THIS LINE to the email you registered on your frontend ---
-TARGET_EMAIL = "oga@foodmart.com"
+TARGET_EMAIL = "eresecaleb012@gmail.com"
 
 with engine.connect() as conn:
     print("Connecting to Aiven Cloud Database...")
-    result = conn.execute(text(f"UPDATE users SET is_admin = 1 WHERE email = '{TARGET_EMAIL}';"))
+    result = conn.execute(text(f"UPDATE users SET is_admin = 1, is_super_admin = 1 WHERE email = '{TARGET_EMAIL}';"))
     conn.commit()
     
     if result.rowcount > 0:

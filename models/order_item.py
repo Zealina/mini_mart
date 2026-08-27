@@ -25,3 +25,10 @@ class OrderItem(BaseModel, Base):
         else:
             self.quantity = 1
         super().__init__(*args, **kwargs)
+
+
+    def to_dict(self):
+        my_dict = super().to_dict()
+        if hasattr(self, 'product') and self.product is not None:
+            my_dict.pop('product', None)
+        return my_dict
