@@ -6,6 +6,7 @@ from flask import jsonify, request
 from models import storage
 from models.user import User
 from repositories.user_repo import UserRepo
+from sqlalchemy.exc import IntegrityError
 
 @app_views.route('/users', methods=['GET'])
 def get_all_users():
@@ -28,7 +29,13 @@ def create_user():
 
     try:
         new = UserRepo.new(**data)
+    except IntegrityError:
+        storage.rollback()
+        return jsonify({"error": "Email or Phone number is already registered!"}), 400
     except ValueError as e:
+        if "already exists" in str(e).lower():
+            storage.rollback()
+            return jsonify({"error": "Email or Phone number is already registered!"}), 400
         print(f"Error: {e}")
         return jsonify({
             "error": "incorrect/incomplete parameters",

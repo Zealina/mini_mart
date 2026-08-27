@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #f68b1e;   /* Jumia/CEXPRESS MINIMART Orange */
+  --color-brand-dark: #282828;     /* Deep Charcoal */
+  --color-brand-light: #f1f1f2;     /* Soft grey background */
+}
+
+body {
+  background-color: var(--color-brand-light);
+  color: var(--color-brand-dark);
+  min-height: 100vh;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
