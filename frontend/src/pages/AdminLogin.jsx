@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, Lock, AlertTriangle, ArrowLeft, Mail } from 'lucide-react';
-import apiClient from '../api/client';
+import apiClient, { getApiErrorMessage } from '../api/client';
 import { setAuthState } from '../store/authStore';
 
 export default function AdminLogin({ setUser }) {
@@ -32,7 +32,7 @@ export default function AdminLogin({ setUser }) {
         setError('Access Denied: Account lacks administrator privileges.');
       }
     } catch (err) {
-      setError(err.response?.data?.error || err.response?.data?.message || 'Invalid clearance credentials.');
+      setError(getApiErrorMessage(err, 'Invalid clearance credentials.'));
     } finally {
       setIsLoading(false);
     }

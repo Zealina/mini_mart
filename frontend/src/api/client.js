@@ -5,6 +5,18 @@ const baseURL = "/api";
 const apiClient = axios.create({ baseURL: baseURL, withCredentials: true });
 const refreshClient = axios.create({baseURL: baseURL, withCredentials: true});
 
+export function getApiErrorMessage(error, fallback = 'Something went wrong. Please try again.') {
+  const data = error?.response?.data;
+  const errorMessage = typeof data?.error === 'string' ? data.error : '';
+  const detailMessage = typeof data?.message === 'string' ? data.message : '';
+
+  if (detailMessage && (!errorMessage || ['bad_request', 'incorrect/incomplete parameters'].includes(errorMessage.toLowerCase()))) {
+    return detailMessage;
+  }
+
+  return errorMessage || detailMessage || error?.message || fallback;
+}
+
 // Shared by the 401 interceptor below and by App's mount-time silent login —
 // hits /refresh (relies on the httpOnly refresh-token cookie) and stores the
 // new access token in the in-memory auth store. Throws on failure so callers

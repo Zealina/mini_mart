@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { ArrowLeft, User, MapPin, Phone, CheckCircle2, AlertCircle, Save, Mail, MessageCircle, Shield, Lock, CreditCard } from 'lucide-react';
-import apiClient from '../api/client';
+import apiClient, { getApiErrorMessage } from '../api/client';
 
 export default function Settings({ user, setUser }) {
   const actualUser = user?.user || user;
@@ -61,7 +61,7 @@ export default function Settings({ user, setUser }) {
       setStatus({ type: 'success', message: 'Profile updated successfully! Your preferences have been saved.' });
       setPasswordData({ newPassword: '', confirmPassword: '' }); // Clear password fields
     } catch (error) {
-      setStatus({ type: 'error', message: error.response?.data?.error || 'Failed to update profile.' });
+      setStatus({ type: 'error', message: getApiErrorMessage(error, 'Failed to update profile. Please check your details and try again.') });
     } finally {
       setIsSaving(false);
     }

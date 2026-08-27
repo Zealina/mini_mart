@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Minus, Plus, Trash2, CheckCircle2, AlertCircle, ShoppingBag, ArrowLeft, MapPin, CreditCard, Phone, Landmark, Upload, FileText, X, Paperclip } from 'lucide-react';
-import apiClient from '../api/client';
+import apiClient, { getApiErrorMessage } from '../api/client';
 
 const MAX_RECEIPT_SIZE_MB = 10;
 const ACCEPTED_RECEIPT_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'application/pdf'];
@@ -123,7 +123,7 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
         navigate('/orders');
       }, 2000);
     } catch (error) {
-      setOrderStatus({ type: 'error', message: error.response?.data?.error || 'Failed to complete order.' });
+      setOrderStatus({ type: 'error', message: getApiErrorMessage(error, 'Failed to complete order. Please check your details and try again.') });
     } finally {
       setIsOrdering(false);
     }

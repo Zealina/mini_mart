@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { CheckCircle2, AlertCircle, Store, Eye, EyeOff } from 'lucide-react';
-import apiClient from '../api/client';
+import apiClient, { getApiErrorMessage } from '../api/client';
 import { setAuthState } from '../store/authStore';
 
 export default function Auth({ setUser }) {
@@ -88,7 +88,7 @@ export default function Auth({ setUser }) {
         setFormData(prev => ({ ...prev, password: '', confirm_password: '' }));
       }
     } catch (error) {
-      const errorMsg = error.response?.data?.error || error.response?.data?.message || 'Authentication failed. Please check credentials.';
+      const errorMsg = getApiErrorMessage(error, 'Authentication failed. Please check your details and try again.');
       setStatus({ type: 'error', message: errorMsg });
     } finally {
       setIsSubmitting(false);
@@ -105,7 +105,7 @@ export default function Auth({ setUser }) {
 
       setStatus({ type: 'success', message: 'Kindly check your email for your reset link. Click it to set a new password.' });
     } catch (error) {
-      const errorMsg = error.response?.data?.error || error.response?.data?.message || 'Could not send reset link. Please try again.';
+      const errorMsg = getApiErrorMessage(error, 'Could not send reset link. Please try again.');
       setStatus({ type: 'error', message: errorMsg });
     } finally {
       setIsSubmitting(false);
@@ -141,7 +141,7 @@ export default function Auth({ setUser }) {
       setConfirmNewPassword('');
       setTimeout(() => switchMode('login'), 1200);
     } catch (error) {
-      const errorMsg = error.response?.data?.error || error.response?.data?.message || 'Could not reset password. This link may be invalid or expired.';
+      const errorMsg = getApiErrorMessage(error, 'Could not reset password. This link may be invalid or expired.');
       setStatus({ type: 'error', message: errorMsg });
     } finally {
       setIsSubmitting(false);

@@ -5,7 +5,7 @@ import {
   Edit3, CheckCircle2, AlertCircle, X, Layers, Image as ImageIcon, 
   Truck, Navigation, ExternalLink, ShoppingBag, FileText, Phone, MapPin, Clock, Search, Shield, UserPlus, Users, User
 } from 'lucide-react';
-import apiClient from '../api/client';
+import apiClient, { getApiErrorMessage } from '../api/client';
 
 export default function AdminDashboard({ user, categories, products, triggerReload, handleLogout }) {
   const [status, setStatus] = useState({ type: '', message: '' });
@@ -107,7 +107,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
       setOrders(prev => prev.filter(o => o.id !== orderId));
       triggerReload();
     } catch (err) {
-      displayAlert('error', err.response?.data?.error || 'Failed to cancel order.');
+      displayAlert('error', getApiErrorMessage(err, 'Failed to cancel order.'));
     }
   };
 
@@ -118,7 +118,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
       setViewOrder(prev => ({ ...prev, status: newStatus }));
       displayAlert('success', `Order marked as ${newStatus.toUpperCase()}!`);
     } catch (err) {
-      displayAlert('error', 'Failed to update delivery status.');
+      displayAlert('error', getApiErrorMessage(err, 'Failed to update delivery status.'));
     }
   };
 
@@ -130,7 +130,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
       setViewOrder(prev => (prev && prev.id === orderId) ? { ...prev, payment_confirmed: true, payment_confirmed_by: confirmedBy } : prev);
       displayAlert('success', 'Payment confirmed!');
     } catch (err) {
-      displayAlert('error', err.response?.data?.error || 'Failed to confirm payment.');
+      displayAlert('error', getApiErrorMessage(err, 'Failed to confirm payment.'));
     }
   };
 
@@ -168,7 +168,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
       setEditingId(null);
       triggerReload();
     } catch (err) {
-      displayAlert('error', err.response?.data?.error || 'Category operation failed.');
+      displayAlert('error', getApiErrorMessage(err, 'Category operation failed.'));
     }
   };
 
@@ -179,7 +179,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
       displayAlert('success', 'Category deleted from database.');
       triggerReload();
     } catch (err) {
-      displayAlert('error', err.response?.data?.error || 'Failed to delete category.');
+      displayAlert('error', getApiErrorMessage(err, 'Failed to delete category.'));
     }
   };
 
@@ -210,7 +210,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
       setProdImage(null);
       triggerReload();
     } catch (err) {
-      displayAlert('error', err.response?.data?.error || 'Product operation failed.');
+      displayAlert('error', getApiErrorMessage(err, 'Product operation failed.'));
     }
   };
 
@@ -233,7 +233,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
       displayAlert('success', 'Product dropped from inventory.');
       triggerReload();
     } catch (err) {
-      displayAlert('error', err.response?.data?.error || 'Failed to delete product.');
+      displayAlert('error', getApiErrorMessage(err, 'Failed to delete product.'));
     }
   };
 
@@ -276,7 +276,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
       setCarouselImages(prev => prev.filter(img => img.id !== id));
       displayAlert('success', 'Carousel image removed.');
     } catch (err) {
-      displayAlert('error', err.response?.data?.error || 'Failed to delete carousel image.');
+      displayAlert('error', getApiErrorMessage(err, 'Failed to delete carousel image.'));
     }
   };
 
@@ -296,7 +296,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
       setStaffForm({ first_name: '', last_name: '', email: '', whatsapp_number: '', password: '', role: 'sub_admin' });
       setStaffTrigger(prev => prev + 1);
     } catch (err) {
-      displayAlert('error', err.response?.data?.error || err.response?.data?.message || 'Failed to create staff account.');
+      displayAlert('error', getApiErrorMessage(err, 'Failed to create staff account.'));
     }
   };
 
@@ -312,7 +312,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
       displayAlert('success', 'Staff access revoked and account deleted.');
       setStaffTrigger(prev => prev + 1);
     } catch (err) {
-      displayAlert('error', err.response?.data?.error || 'Failed to delete staff.');
+      displayAlert('error', getApiErrorMessage(err, 'Failed to delete staff.'));
     }
   };
 
