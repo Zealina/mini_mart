@@ -46,13 +46,9 @@ class UserRepo:
 
         try:
             user.save()
-        except IntegrityError as e:
-            detail = str(e.orig).lower() if e.orig else str(e).lower()
-
-            for entry in required_fields:
-                if entry in detail:
-                    raise ValueError(f"{entry} already exists!")
-            raise ValueError("A unique field already exists!")
+        except IntegrityError:
+            storage.rollback()
+            raise
 
         return user
 

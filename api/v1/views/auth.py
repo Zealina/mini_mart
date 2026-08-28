@@ -17,6 +17,7 @@ from repositories.user_repo import UserRepo
 from functools import wraps
 from datetime import datetime, timedelta
 from email_service import send_reset_password_email
+from sqlalchemy.exc import IntegrityError
 
 
 
@@ -31,8 +32,10 @@ def login():
         return jsonify({"error": "Missing email or password"}), 400
 
     user = UserRepo.get_by_email(email)
-    if not user or not user.check_password(password):
-        return jsonify({"error": "Incorrect email or password"}), 401
+    if user is None:
+        return jsonify({"error": "Account not found. Please check your email."}), 404
+    if not user.check_password(password):
+        return jsonify({"error": "Incorrect password. Please try again."}), 401
 
     access_token = create_access_token(
             identity=user.id,
@@ -57,6 +60,8 @@ def register():
     data = request.get_json()
     try:
         new_user = UserRepo.new(**data)
+    except IntegrityError:
+        return jsonify({"error": "An account with this Email or WhatsApp number already exists."}), 400
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     return jsonify(

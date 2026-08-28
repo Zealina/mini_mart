@@ -43,53 +43,61 @@ export default function Auth({ setUser }) {
     setStatus({ type: '', message: '' });
   };
 
+  const handleLogin = async () => {
+    try {
+      const response = await apiClient.post('/login', {
+        email: formData.email,
+        password: formData.password
+      });
+
+      const actualUser = response.data.user || response.data;
+      setUser(actualUser);
+      setAuthState({ accessToken: response.data.access_token });
+
+      setStatus({ type: 'success', message: 'Logged in successfully!' });
+      setTimeout(() => navigate('/'), 1000);
+    } catch (error) {
+      const errorMsg = error.response?.data?.error || 'Authentication failed. Please check your details and try again.';
+      setStatus({ type: 'error', message: errorMsg });
+    }
+  };
+
+  const handleRegister = async () => {
+    const registerPayload = {
+      first_name: formData.first_name,
+      last_name: formData.last_name,
+      email: formData.email,
+      password: formData.password,
+      whatsapp_number: formData.whatsapp_number
+    };
+
+    if (formData.phone_number) registerPayload.phone_number = formData.phone_number;
+    if (formData.address) registerPayload.address = formData.address;
+
+    try {
+      await apiClient.post('/users', registerPayload);
+
+      setStatus({ type: 'success', message: 'Registration complete! You can now log in.' });
+      switchMode('login');
+      setFormData(prev => ({ ...prev, password: '', confirm_password: '' }));
+    } catch (error) {
+      const errorMsg = error.response?.data?.error || 'Registration failed. Please check your details and try again.';
+      setStatus({ type: 'error', message: errorMsg });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus({ type: '', message: '' });
 
-    if (!isLogin) {
-      if (formData.password !== formData.confirm_password) {
-        setStatus({ type: 'error', message: 'Passwords do not match.' });
-        return;
-      }
+    if (!isLogin && formData.password !== formData.confirm_password) {
+      setStatus({ type: 'error', message: 'Passwords do not match.' });
+      return;
     }
 
     setIsSubmitting(true);
-
     try {
-      if (isLogin) {
-        const response = await apiClient.post('/login', {
-          email: formData.email,
-          password: formData.password
-        });
-
-        const actualUser = response.data.user || response.data;
-        setUser(actualUser);
-        setAuthState({ accessToken: response.data.access_token });
-
-        setStatus({ type: 'success', message: 'Logged in successfully!' });
-        setTimeout(() => navigate('/'), 1000);
-      } else {
-        const registerPayload = {
-          first_name: formData.first_name,
-          last_name: formData.last_name,
-          email: formData.email,
-          password: formData.password,
-          whatsapp_number: formData.whatsapp_number
-        };
-
-        if (formData.phone_number) registerPayload.phone_number = formData.phone_number;
-        if (formData.address) registerPayload.address = formData.address;
-
-        await apiClient.post('/users', registerPayload);
-
-        setStatus({ type: 'success', message: 'Registration complete! You can now log in.' });
-        switchMode('login');
-        setFormData(prev => ({ ...prev, password: '', confirm_password: '' }));
-      }
-    } catch (error) {
-      const errorMsg = getApiErrorMessage(error, 'Authentication failed. Please check your details and try again.');
-      setStatus({ type: 'error', message: errorMsg });
+      await (isLogin ? handleLogin() : handleRegister());
     } finally {
       setIsSubmitting(false);
     }

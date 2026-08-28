@@ -31,11 +31,8 @@ def create_user():
         new = UserRepo.new(**data)
     except IntegrityError:
         storage.rollback()
-        return jsonify({"error": "Email or Phone number is already registered!"}), 400
+        return jsonify({"error": "An account with this Email or WhatsApp number already exists."}), 400
     except ValueError as e:
-        if "already exists" in str(e).lower():
-            storage.rollback()
-            return jsonify({"error": "Email or Phone number is already registered!"}), 400
         print(f"Error: {e}")
         return jsonify({
             "error": "incorrect/incomplete parameters",
