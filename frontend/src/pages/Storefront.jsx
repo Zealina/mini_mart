@@ -90,6 +90,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
         </div>
 
         <div className="flex items-center space-x-4 md:space-x-6">
+          {/* Desktop Admin Link */}
           {isAdmin && (
             <Link to="/admin" className="text-xs font-bold text-gray-600 hover:text-[#f68b1e] border border-gray-200 px-3 py-1.5 rounded-lg hidden md:flex items-center gap-1.5 transition-colors shadow-sm">
               <Database className="h-3.5 w-3.5 text-[#f68b1e]" /> Enter Console
@@ -114,7 +115,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
                     <p className="text-xs text-gray-500 truncate">{actualUser.email}</p>
                   </div>
                   <div className="p-2 flex flex-col">
-                    {/* ✅ ADMIN MOBILE LINK ADDED HERE */}
+                    {/* ✅ REDUNDANCY: Admin Link visible in mobile dropdown */}
                     {isAdmin && (
                       <Link to="/admin" className="md:hidden flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-gray-900 hover:bg-orange-50 hover:text-[#f68b1e] rounded-lg transition-colors border-b border-gray-100 mb-1 pb-3">
                         <Database className="h-4 w-4 text-[#f68b1e]" /> Admin Console
