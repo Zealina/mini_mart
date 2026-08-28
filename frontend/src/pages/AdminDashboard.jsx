@@ -343,19 +343,19 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900 pb-12">
       <nav className="bg-gray-950 text-white shadow-md p-3 flex flex-col md:flex-row justify-between items-center gap-3 px-4 sm:px-8 sticky top-0 z-40">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full md:w-auto justify-center md:justify-start">
           <img src="/logo-circular.png" alt="C_Express" className="h-10 w-10 rounded-full object-contain bg-white" />
           <div>
             <span className="block font-black tracking-widest uppercase text-sm leading-none flex items-center gap-1.5">
               C_EXPRESS CONSOLE {isSuperAdmin && <Shield className="h-3.5 w-3.5 text-green-400" />}
             </span>
-            <span className="block text-[10px] text-gray-400 font-mono mt-1">
+            <span className="block text-[10px] text-gray-400 font-mono mt-1 text-center md:text-left">
               v1.0.0 ({isSuperAdmin ? 'Super Admin' : 'Sub Admin'})
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
           <button
             onClick={async () => {
               await handleLogout();
@@ -372,35 +372,36 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-200 pb-5 mb-6 gap-4">
           <div>
-            <h1 className="text-2xl font-black text-gray-950 tracking-tight">System Administration</h1>
-            <p className="text-sm text-gray-500">Manage products, categories, and fulfill incoming orders.</p>
+            <h1 className="text-xl md:text-2xl font-black text-gray-950 tracking-tight">System Administration</h1>
+            <p className="text-sm text-gray-500 mt-1">Manage products, categories, and fulfill incoming orders.</p>
           </div>
 
-          <div className="flex flex-nowrap bg-gray-100 p-1 rounded-xl w-full md:w-auto overflow-x-auto">
-            <button onClick={() => { setActiveTab('carousel'); setEditingId(null); setSearchQuery(''); }} className={`px-5 py-2 whitespace-nowrap rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${activeTab === 'carousel' ? 'bg-white text-[#f68b1e] shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
+          {/* ✅ MOBILE FIX: Scrollable Tab Navigation */}
+          <div className="flex flex-nowrap bg-gray-100 p-1.5 rounded-xl w-full md:w-auto overflow-x-auto snap-x hide-scrollbar">
+            <button onClick={() => { setActiveTab('carousel'); setEditingId(null); setSearchQuery(''); }} className={`px-4 md:px-5 py-2 whitespace-nowrap rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 snap-center ${activeTab === 'carousel' ? 'bg-white text-[#f68b1e] shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
               <ImageIcon className="h-4 w-4" /> Carousel
             </button>
-            <button onClick={() => { setActiveTab('orders'); setEditingId(null); setSearchQuery(''); }} className={`px-5 py-2 whitespace-nowrap rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${activeTab === 'orders' ? 'bg-white text-[#f68b1e] shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
+            <button onClick={() => { setActiveTab('orders'); setEditingId(null); setSearchQuery(''); }} className={`px-4 md:px-5 py-2 whitespace-nowrap rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 snap-center ${activeTab === 'orders' ? 'bg-white text-[#f68b1e] shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
               <Truck className="h-4 w-4" /> Orders
             </button>
-            <button onClick={() => { setActiveTab('products'); setEditingId(null); setSearchQuery(''); }} className={`px-5 py-2 whitespace-nowrap rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${activeTab === 'products' ? 'bg-white text-[#f68b1e] shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
+            <button onClick={() => { setActiveTab('products'); setEditingId(null); setSearchQuery(''); }} className={`px-4 md:px-5 py-2 whitespace-nowrap rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 snap-center ${activeTab === 'products' ? 'bg-white text-[#f68b1e] shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
               <Package className="h-4 w-4" /> Products
             </button>
-            <button onClick={() => { setActiveTab('categories'); setEditingId(null); setSearchQuery(''); }} className={`px-5 py-2 whitespace-nowrap rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${activeTab === 'categories' ? 'bg-white text-[#f68b1e] shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
+            <button onClick={() => { setActiveTab('categories'); setEditingId(null); setSearchQuery(''); }} className={`px-4 md:px-5 py-2 whitespace-nowrap rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 snap-center ${activeTab === 'categories' ? 'bg-white text-[#f68b1e] shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
               <Layers className="h-4 w-4" /> Categories
             </button>
             {isSuperAdmin && (
-              <button onClick={() => { setActiveTab('staff'); setEditingId(null); setSearchQuery(''); }} className={`px-5 py-2 whitespace-nowrap rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${activeTab === 'staff' ? 'bg-white text-[#f68b1e] shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
+              <button onClick={() => { setActiveTab('staff'); setEditingId(null); setSearchQuery(''); }} className={`px-4 md:px-5 py-2 whitespace-nowrap rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 snap-center ${activeTab === 'staff' ? 'bg-white text-[#f68b1e] shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
                 <Shield className="h-4 w-4" /> Staff Mgmt
               </button>
             )}
           </div>
         </div>
 
-        <div className="mb-8 relative max-w-2xl">
+        <div className="mb-6 relative max-w-2xl">
           <input
             type="text"
             placeholder={`Search ${activeTab} data...`}
@@ -426,11 +427,12 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+          
           {activeTab === 'carousel' && (
-            <div className="lg:col-span-3">
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <div className="flex justify-between items-center mb-4">
+            <div className="col-span-1 lg:col-span-3">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 md:p-6 overflow-hidden">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
                   <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                     <ImageIcon className="h-4 w-4" /> Storefront Carousel Images
                   </h3>
@@ -438,18 +440,18 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                 </div>
 
                 <form onSubmit={handleCarouselUpload} className="mb-3">
-                  <div className="flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-lg p-2">
+                  <div className="flex flex-col sm:flex-row items-center gap-2 bg-gray-50 border border-gray-100 rounded-lg p-2">
                     <input
                       type="file"
                       accept="image/*"
                       multiple
                       onChange={(e) => setCarouselFiles(Array.from(e.target.files || []))}
-                      className="flex-grow text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-bold file:bg-gray-900 file:text-white hover:file:bg-[#f68b1e] file:cursor-pointer"
+                      className="w-full flex-grow text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-bold file:bg-gray-900 file:text-white hover:file:bg-[#f68b1e] file:cursor-pointer"
                     />
                     <button
                       type="submit"
                       disabled={carouselUploading || carouselFiles.length === 0}
-                      className="bg-[#f68b1e] text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-40 flex items-center justify-center gap-1.5 whitespace-nowrap"
+                      className="w-full sm:w-auto bg-[#f68b1e] text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-40 flex items-center justify-center gap-1.5 whitespace-nowrap"
                     >
                       <PlusCircle className="h-3.5 w-3.5" />
                       {carouselUploading ? 'Uploading...' : carouselFiles.length > 0 ? `Upload ${carouselFiles.length}` : 'Upload'}
@@ -466,7 +468,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                     <p>No carousel images yet. Upload some above.</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {carouselImages.map((img) => (
                       <div key={img.id} className="relative rounded-xl overflow-hidden border border-gray-100 shadow-sm aspect-video bg-gray-50">
                         <img src={"http://127.0.0.1" + img.image_url} alt="Carousel" className="w-full h-full object-cover" />
@@ -485,8 +487,8 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
           )}
 
           {activeTab === 'orders' && (
-            <div className="lg:col-span-3">
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div className="col-span-1 lg:col-span-3">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 md:p-6 overflow-hidden">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                     <FileText className="h-4 w-4" /> Customer Purchase Orders
@@ -500,42 +502,43 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                     <p>{searchQuery ? "No matching orders found." : "No incoming orders found in the database."}</p>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto w-full">
-                    <table className="w-full text-left border-collapse text-sm">
+                  // ✅ MOBILE FIX: Scrollable Tables
+                  <div className="overflow-x-auto w-full -mx-4 px-4 md:mx-0 md:px-0">
+                    <table className="w-full text-left border-collapse text-sm min-w-[700px]">
                       <thead>
                         <tr className="border-b border-gray-200 text-gray-500 font-bold bg-gray-50/50 uppercase text-xs tracking-wider">
-                          <th className="p-4 rounded-tl-lg">Order Number</th>
-                          <th className="p-4">Customer</th>
-                          <th className="p-4">Items</th>
-                          <th className="p-4">Contact Number</th>
-                          <th className="p-4">Status</th>
-                          <th className="p-4">Payment</th>
-                          <th className="p-4 text-right rounded-tr-lg">Action</th>
+                          <th className="p-4 rounded-tl-lg whitespace-nowrap">Order Number</th>
+                          <th className="p-4 whitespace-nowrap">Customer</th>
+                          <th className="p-4 whitespace-nowrap">Items</th>
+                          <th className="p-4 whitespace-nowrap">Contact Number</th>
+                          <th className="p-4 whitespace-nowrap">Status</th>
+                          <th className="p-4 whitespace-nowrap">Payment</th>
+                          <th className="p-4 text-right rounded-tr-lg whitespace-nowrap">Action</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-100">
                         {filteredOrders.map((order) => (
                           <tr key={order.id} className="hover:bg-orange-50/30 transition-colors group">
                             <td className="p-4">
-                              <div className="font-black text-gray-900 text-sm">Order #{order.orderNumber}</div>
-                              <div className="font-mono text-[10px] text-gray-400 mt-0.5">UUID: {(order.id || '').toString().substring(0, 8)}</div>
+                              <div className="font-black text-gray-900 text-sm whitespace-nowrap">Order #{order.orderNumber}</div>
+                              <div className="font-mono text-[10px] text-gray-400 mt-0.5 whitespace-nowrap">UUID: {(order.id || '').toString().substring(0, 8)}</div>
                             </td>
                             <td className="p-4">
-                              <div className="font-bold text-gray-900 text-sm leading-tight">{getCustomerName(order)}</div>
-                              <div className="text-xs text-gray-400 mt-0.5 truncate max-w-[180px]">{getCustomerEmail(order)}</div>
+                              <div className="font-bold text-gray-900 text-sm leading-tight whitespace-nowrap">{getCustomerName(order)}</div>
+                              <div className="text-xs text-gray-400 mt-0.5 truncate max-w-[150px]">{getCustomerEmail(order)}</div>
                             </td>
                             <td className="p-4 font-bold text-gray-800">
-                              <span className="bg-gray-100 text-gray-700 px-2.5 py-1 rounded text-xs">
+                              <span className="bg-gray-100 text-gray-700 px-2.5 py-1 rounded text-xs whitespace-nowrap">
                                 {getItemsCount(order)} units
                               </span>
                             </td>
-                            <td className="p-4 text-gray-600 font-medium">
+                            <td className="p-4 text-gray-600 font-medium whitespace-nowrap">
                               {order.contact_phone || 'No phone'}
                             </td>
-                            <td className="p-4">
+                            <td className="p-4 whitespace-nowrap">
                               {renderStatusBadge(order.status)}
                             </td>
-                            <td className="p-4">
+                            <td className="p-4 whitespace-nowrap">
                               {order.payment_confirmed ? (
                                 <div>
                                   <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-black uppercase flex items-center gap-1 w-max">
@@ -557,7 +560,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                             <td className="p-4 text-right">
                               <button
                                 onClick={() => setViewOrder(order)}
-                                className="text-xs font-bold bg-gray-900 text-white px-5 py-2 rounded-lg hover:bg-[#f68b1e] shadow-sm transition-all flex items-center gap-2 ml-auto"
+                                className="text-xs font-bold bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-[#f68b1e] shadow-sm transition-all flex items-center gap-1.5 ml-auto whitespace-nowrap"
                               >
                                 View Dispatch <ExternalLink className="h-3.5 w-3.5" />
                               </button>
@@ -574,8 +577,8 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
 
           {activeTab === 'staff' && isSuperAdmin && (
             <>
-              <div className="lg:col-span-1">
-                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm sticky top-24">
+              <div className="col-span-1">
+                <div className="bg-white p-4 md:p-6 rounded-2xl border border-gray-100 shadow-sm lg:sticky lg:top-24">
                   <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <UserPlus className="h-5 w-5 text-[#f68b1e]" /> Provision Sub-Admin
                   </h3>
@@ -584,7 +587,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                   </p>
 
                   <form onSubmit={handleStaffSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-xs font-bold text-gray-500 uppercase mb-1">First Name *</label>
                         <input required type="text" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f68b1e]" value={staffForm.first_name} onChange={e => setStaffForm({ ...staffForm, first_name: e.target.value })} />
@@ -622,8 +625,8 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                 </div>
               </div>
 
-              <div className="lg:col-span-2">
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <div className="col-span-1 lg:col-span-2">
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 md:p-6 overflow-hidden">
                   <div className="flex justify-between items-center mb-6">
                     <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                       <Users className="h-4 w-4" /> Authorized System Users
@@ -634,14 +637,15 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                   {filteredStaff.length === 0 ? (
                     <div className="text-center py-8 text-gray-400">No staff found matching "{searchQuery}".</div>
                   ) : (
-                    <div className="overflow-x-auto w-full">
-                      <table className="w-full text-left border-collapse text-sm">
+                    // ✅ MOBILE FIX: Scrollable Tables
+                    <div className="overflow-x-auto w-full -mx-4 px-4 md:mx-0 md:px-0">
+                      <table className="w-full text-left border-collapse text-sm min-w-[500px]">
                         <thead>
                           <tr className="border-b border-gray-100 text-gray-400 font-semibold">
-                            <th className="pb-3">Staff Member</th>
-                            <th className="pb-3">Access Level</th>
-                            <th className="pb-3">Contact</th>
-                            <th className="pb-3 text-right">Actions</th>
+                            <th className="pb-3 whitespace-nowrap">Staff Member</th>
+                            <th className="pb-3 whitespace-nowrap">Access Level</th>
+                            <th className="pb-3 whitespace-nowrap">Contact</th>
+                            <th className="pb-3 text-right whitespace-nowrap">Actions</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
@@ -651,12 +655,12 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                               <tr key={staff.id} className="hover:bg-gray-50/50 transition-colors group">
                                 <td className="py-3.5 font-medium text-gray-900">
                                   <div className="flex items-center gap-3">
-                                    <div className={`h-8 w-8 rounded-full flex items-center justify-center text-white font-bold text-xs ${isStaffSuper ? 'bg-green-500' : 'bg-orange-400'}`}>
+                                    <div className={`h-8 w-8 rounded-full flex items-center justify-center text-white font-bold text-xs ${isStaffSuper ? 'bg-green-500' : 'bg-orange-400'} flex-shrink-0`}>
                                       {staff.first_name?.charAt(0).toUpperCase()}
                                     </div>
                                     <div>
-                                      <div className="text-sm">{staff.first_name} {staff.last_name}</div>
-                                      <div className="text-xs text-gray-400 font-normal">{staff.email}</div>
+                                      <div className="text-sm whitespace-nowrap">{staff.first_name} {staff.last_name}</div>
+                                      <div className="text-xs text-gray-400 font-normal truncate max-w-[120px] md:max-w-[200px]">{staff.email}</div>
                                     </div>
                                   </div>
                                 </td>
@@ -671,13 +675,13 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                                     </span>
                                   )}
                                 </td>
-                                <td className="py-3.5 text-gray-500 text-xs">
+                                <td className="py-3.5 text-gray-500 text-xs whitespace-nowrap">
                                   {staff.whatsapp_number || 'N/A'}
                                 </td>
                                 <td className="py-3.5 text-right">
                                   <button
                                     onClick={() => handleDeleteStaff(staff.id, staff.email)}
-                                    className="text-xs font-bold text-red-500 hover:text-white bg-red-50 hover:bg-red-500 px-3 py-1.5 rounded transition-colors"
+                                    className="text-xs font-bold text-red-500 hover:text-white bg-red-50 hover:bg-red-500 px-3 py-1.5 rounded transition-colors whitespace-nowrap"
                                   >
                                     Revoke
                                   </button>
@@ -696,8 +700,8 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
 
           {activeTab !== 'orders' && activeTab !== 'staff' && activeTab !== 'carousel' && (
             <>
-              <div className="lg:col-span-1">
-                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm sticky top-24">
+              <div className="col-span-1">
+                <div className="bg-white p-4 md:p-6 rounded-2xl border border-gray-100 shadow-sm lg:sticky lg:top-24">
                   {activeTab === 'categories' ? (
                     <>
                       <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -709,13 +713,13 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                           <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Name</label>
                           <input type="text" required placeholder="e.g. Beverages" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f68b1e] text-sm" value={catName} onChange={e => setCatName(e.target.value)} />
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex flex-col sm:flex-row gap-2">
                           <button type="submit" className="flex-1 bg-[#f68b1e] text-white py-2 rounded-lg text-sm font-bold hover:bg-orange-600 transition-colors">
                             {editingId ? 'Update Category' : 'Save Category'}
                           </button>
                           {editingId && (
-                            <button type="button" onClick={() => { setEditingId(null); setCatName(''); }} className="p-2 bg-gray-100 rounded-lg text-gray-500 hover:bg-gray-200">
-                              <X className="h-4 w-4" />
+                            <button type="button" onClick={() => { setEditingId(null); setCatName(''); }} className="w-full sm:w-auto p-2 bg-gray-100 rounded-lg text-gray-500 hover:bg-gray-200 flex justify-center items-center">
+                              <X className="h-4 w-4" /> <span className="sm:hidden ml-2 text-sm font-bold">Cancel</span>
                             </button>
                           )}
                         </div>
@@ -739,7 +743,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                           <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Product Title *</label>
                           <input required type="text" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f68b1e]" value={prodForm.name} onChange={e => setProdForm({ ...prodForm, name: e.target.value })} />
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
                             <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Price (₦) *</label>
                             <input required type="number" step="0.01" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f68b1e]" value={prodForm.price} onChange={e => setProdForm({ ...prodForm, price: e.target.value })} />
@@ -749,7 +753,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                             <input required type="number" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f68b1e]" value={prodForm.stock} onChange={e => setProdForm({ ...prodForm, stock: e.target.value })} />
                           </div>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
                             <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Category Link *</label>
                             <select required className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f68b1e]" value={prodForm.category_id} onChange={e => setProdForm({ ...prodForm, category_id: e.target.value })}>
@@ -782,7 +786,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                               type="file"
                               accept="image/*"
                               onChange={(e) => setProdImage(e.target.files?.[0] || null)}
-                              className="flex-grow text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-bold file:bg-gray-900 file:text-white hover:file:bg-[#f68b1e] file:cursor-pointer"
+                              className="flex-grow w-full overflow-hidden text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-bold file:bg-gray-900 file:text-white hover:file:bg-[#f68b1e] file:cursor-pointer"
                             />
                           </div>
                           {editingId && !prodImage && prodForm.image_url && (
@@ -799,12 +803,12 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                 </div>
               </div>
 
-              <div className="lg:col-span-2">
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <div className="col-span-1 lg:col-span-2">
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 md:p-6 overflow-hidden">
                   {activeTab === 'categories' ? (
                     <div>
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">Database Categories Records</h3>
+                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">Database Categories</h3>
                         {searchQuery && <span className="text-xs font-bold text-[#f68b1e] bg-orange-50 px-2 py-1 rounded">{filteredCategories.length} Results</span>}
                       </div>
                       {filteredCategories.length === 0 ? (
@@ -814,11 +818,11 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                           {filteredCategories.map(cat => (
                             <div key={cat.id} className="py-3 flex justify-between items-center group">
                               <div className="flex items-center gap-2">
-                                <Tag className="h-4 w-4 text-[#f68b1e]" />
-                                <span className="font-medium text-gray-800 text-sm">{cat.name}</span>
-                                <span className="text-[10px] text-gray-300 font-mono">({cat.id.substring(0, 8)})</span>
+                                <Tag className="h-4 w-4 text-[#f68b1e] flex-shrink-0" />
+                                <span className="font-medium text-gray-800 text-sm truncate">{cat.name}</span>
+                                <span className="text-[10px] text-gray-300 font-mono hidden sm:inline">({cat.id.substring(0, 8)})</span>
                               </div>
-                              <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+                              <div className="flex items-center gap-1 opacity-100 md:opacity-80 group-hover:opacity-100 transition-opacity">
                                 <button onClick={() => { setEditingId(cat.id); setCatName(cat.name); }} className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md">
                                   <Edit3 className="h-4 w-4" />
                                 </button>
@@ -841,15 +845,16 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                       {filteredProducts.length === 0 ? (
                         <div className="text-center py-8 text-gray-400">No products found matching "{searchQuery}".</div>
                       ) : (
-                        <div className="overflow-x-auto w-full">
-                          <table className="w-full text-left border-collapse text-sm">
+                        // ✅ MOBILE FIX: Scrollable Tables
+                        <div className="overflow-x-auto w-full -mx-4 px-4 md:mx-0 md:px-0">
+                          <table className="w-full text-left border-collapse text-sm min-w-[500px]">
                             <thead>
                               <tr className="border-b border-gray-100 text-gray-400 font-semibold">
-                                <th className="pb-3">Product</th>
-                                <th className="pb-3">Category</th>
-                                <th className="pb-3">Price</th>
-                                <th className="pb-3">Stock</th>
-                                <th className="pb-3 text-right">Actions</th>
+                                <th className="pb-3 whitespace-nowrap">Product</th>
+                                <th className="pb-3 whitespace-nowrap">Category</th>
+                                <th className="pb-3 whitespace-nowrap">Price</th>
+                                <th className="pb-3 whitespace-nowrap">Stock</th>
+                                <th className="pb-3 text-right whitespace-nowrap">Actions</th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
@@ -857,27 +862,27 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                                 <tr key={prod.id} className="hover:bg-gray-50/50 transition-colors group">
                                   <td className="py-3.5 font-medium text-gray-900 flex items-center gap-3">
                                     {prod.image_url ? (
-                                      <img src={prod.image_url} alt={prod.name} className="w-8 h-8 rounded object-cover border border-gray-200" />
+                                      <img src={prod.image_url} alt={prod.name} className="w-8 h-8 rounded object-cover border border-gray-200 flex-shrink-0" />
                                     ) : (
-                                      <div className="w-8 h-8 rounded bg-gray-100 border border-gray-200 flex items-center justify-center">
+                                      <div className="w-8 h-8 rounded bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0">
                                         <ImageIcon className="h-4 w-4 text-gray-400" />
                                       </div>
                                     )}
                                     <div>
-                                      <div>{prod.name}</div>
-                                      <div className="text-xs text-gray-400 font-normal">{prod.brand || 'No Brand'}</div>
+                                      <div className="truncate max-w-[150px] sm:max-w-xs">{prod.name}</div>
+                                      <div className="text-xs text-gray-400 font-normal truncate max-w-[150px] sm:max-w-xs">{prod.brand || 'No Brand'}</div>
                                     </div>
                                   </td>
-                                  <td className="py-3.5 text-gray-500">
+                                  <td className="py-3.5 text-gray-500 whitespace-nowrap">
                                     {categories.find(c => c.id === prod.category_id)?.name || 'Unlinked'}
                                   </td>
-                                  <td className="py-3.5 font-bold text-gray-800">₦{parseFloat(prod.price).toLocaleString()}</td>
-                                  <td className="py-3.5">
+                                  <td className="py-3.5 font-bold text-gray-800 whitespace-nowrap">₦{parseFloat(prod.price).toLocaleString()}</td>
+                                  <td className="py-3.5 whitespace-nowrap">
                                     <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${prod.stock > 5 ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
                                       {prod.stock} units
                                     </span>
                                   </td>
-                                  <td className="py-3.5 text-right">
+                                  <td className="py-3.5 text-right whitespace-nowrap">
                                     <div className="flex justify-end gap-1">
                                       <button onClick={() => handleEditProductClick(prod)} className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md">
                                         <Edit3 className="h-4 w-4" />
@@ -907,13 +912,14 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
           className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
           onClick={() => setViewOrder(null)}
         >
+          {/* ✅ MOBILE FIX: Safe Modals */}
           <div
-            className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6 shadow-2xl relative"
+            className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative flex flex-col"
             onClick={e => e.stopPropagation()}
           >
-            <div className="bg-gray-950 p-4 sm:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sticky top-0 z-10">
+            <div className="bg-gray-950 p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sticky top-0 z-10 flex-shrink-0">
               <div>
-                <h3 className="text-lg font-black text-white flex items-center gap-2">
+                <h3 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
                   Dispatch Invoice <span className="text-[#f68b1e]">#{viewOrder.orderNumber}</span>
                 </h3>
                 <div className="flex items-center gap-2 mt-1">
@@ -923,17 +929,17 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
               </div>
               <button
                 onClick={() => setViewOrder(null)}
-                className="bg-white/10 p-2 rounded-full text-gray-400 hover:text-white border border-white/5 hover:bg-white/20 transition-colors shadow-sm"
+                className="absolute top-4 right-4 sm:static bg-white/10 p-2 rounded-full text-gray-400 hover:text-white border border-white/5 hover:bg-white/20 transition-colors shadow-sm"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="space-y-6">
-              <div className="bg-orange-50/50 border border-orange-100 rounded-xl p-5 space-y-4">
+            <div className="p-4 sm:p-6 space-y-6 flex-grow">
+              <div className="bg-orange-50/50 border border-orange-100 rounded-xl p-4 sm:p-5 space-y-4">
                 <h4 className="text-xs font-bold text-[#f68b1e] uppercase tracking-wider border-b border-orange-100 pb-2">Customer & Delivery Info</h4>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex items-start gap-3">
                     <User className="h-4 w-4 text-orange-500 mt-0.5" />
                     <div>
@@ -944,9 +950,9 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
 
                   <div className="flex items-start gap-3">
                     <FileText className="h-4 w-4 text-orange-500 mt-0.5" />
-                    <div>
+                    <div className="w-full pr-2">
                       <span className="block text-xs font-bold text-gray-400 uppercase">Customer Email</span>
-                      <span className="text-sm font-bold text-gray-900 leading-none break-all">{getCustomerEmail(viewOrder)}</span>
+                      <span className="text-sm font-bold text-gray-900 leading-none break-words block">{getCustomerEmail(viewOrder)}</span>
                     </div>
                   </div>
 
@@ -963,7 +969,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                       <Navigation className="h-4 w-4 text-blue-500 mt-0.5" />
                       <div>
                         <span className="block text-xs font-bold text-gray-400 uppercase">Google Maps Dispatch</span>
-                        <a href={viewOrder.gps_link} target="_blank" rel="noopener noreferrer" className="text-sm font-black text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                        <a href={viewOrder.gps_link} target="_blank" rel="noopener noreferrer" className="text-sm font-black text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded border border-blue-100 w-max mt-1">
                           Open Map <ExternalLink className="h-3 w-3" />
                         </a>
                       </div>
@@ -975,7 +981,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                   <MapPin className="h-4 w-4 text-orange-500 mt-0.5" />
                   <div className="w-full">
                     <span className="block text-xs font-bold text-gray-400 uppercase">Typed Address</span>
-                    <span className="text-sm font-medium text-gray-800 bg-white p-3 border border-gray-100 rounded-lg block mt-1 w-full shadow-sm">
+                    <span className="text-sm font-medium text-gray-800 bg-white p-3 border border-gray-100 rounded-lg block mt-1 w-full shadow-sm break-words">
                       {viewOrder.delivery_address || 'No typed address provided'}
                     </span>
                   </div>
@@ -990,21 +996,21 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                   {viewOrder.order_items?.map((item, index) => {
                     const productInfo = products.find(p => p.id === item.product_id);
                     return (
-                      <div key={index} className="flex items-center gap-4 bg-gray-50 border border-gray-100 p-3 rounded-xl shadow-sm">
-                        <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center border border-gray-100 flex-shrink-0 p-1">
+                      <div key={index} className="flex items-center gap-3 sm:gap-4 bg-gray-50 border border-gray-100 p-2.5 sm:p-3 rounded-xl shadow-sm">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-lg flex items-center justify-center border border-gray-100 flex-shrink-0 p-1">
                           {productInfo?.image_url ? (
                             <img src={productInfo.image_url} alt={productInfo.name} className="w-full h-full object-cover rounded" />
                           ) : (
-                            <ShoppingBag className="h-5 w-5 text-gray-300" />
+                            <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5 text-gray-300" />
                           )}
                         </div>
-                        <div className="flex-grow">
-                          <p className="text-sm font-bold text-gray-800 line-clamp-1">{productInfo ? productInfo.name : 'Unknown Product'}</p>
-                          <p className="text-[10px] text-gray-400 font-mono mt-0.5">ID: {item.product_id.substring(0, 8)}</p>
+                        <div className="flex-grow min-w-0">
+                          <p className="text-xs sm:text-sm font-bold text-gray-800 line-clamp-1">{productInfo ? productInfo.name : 'Unknown Product'}</p>
+                          <p className="text-[9px] sm:text-[10px] text-gray-400 font-mono mt-0.5 truncate">ID: {item.product_id.substring(0, 8)}</p>
                         </div>
-                        <div className="text-right bg-white px-3 py-1.5 rounded-lg border border-gray-100">
-                          <span className="text-[10px] text-gray-400 uppercase font-bold block mb-1">Qty</span>
-                          <span className="text-lg font-black text-[#f68b1e] leading-none">x{item.quantity}</span>
+                        <div className="text-right bg-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-gray-100 flex-shrink-0">
+                          <span className="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold block mb-1">Qty</span>
+                          <span className="text-sm sm:text-lg font-black text-[#f68b1e] leading-none">x{item.quantity}</span>
                         </div>
                       </div>
                     );
@@ -1015,49 +1021,51 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
               <div className="bg-gray-50 p-4 border-t border-gray-100 rounded-xl">
                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Payment Verification</h4>
                 {viewOrder.payment_confirmed ? (
-                  <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-green-50 border border-green-200 rounded-lg px-4 py-3 gap-2">
                     <span className="flex items-center gap-2 text-green-700 font-black text-xs uppercase">
                       <CheckCircle2 className="h-4 w-4" /> Payment Confirmed
                     </span>
                     {viewOrder.payment_confirmed_by && (
-                      <span className="text-[11px] text-green-700/70 font-medium">by {viewOrder.payment_confirmed_by}</span>
+                      <span className="text-[10px] sm:text-[11px] text-green-700/70 font-medium break-all text-left sm:text-right">by {viewOrder.payment_confirmed_by}</span>
                     )}
                   </div>
                 ) : (
                   <button
                     onClick={() => handleConfirmPayment(viewOrder.id)}
-                    className="w-full bg-green-600 text-white text-xs font-black uppercase py-2.5 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                    className="w-full bg-green-600 text-white text-xs font-black uppercase py-2.5 sm:py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
                   >
                     <CheckCircle2 className="h-4 w-4" /> Confirm Payment
                   </button>
                 )}
               </div>
 
-              <div className="bg-gray-50 p-4 border-t border-gray-100">
+              <div className="bg-gray-50 p-4 border-t border-gray-100 rounded-xl">
                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Update Order Pipeline</h4>
-                <div className="flex flex-wrap gap-2">
-                  <button onClick={() => handleUpdateStatus(viewOrder.id, 'Pending')} className="flex-1 bg-white border border-gray-200 text-gray-600 text-xs font-bold py-2 rounded-lg hover:bg-gray-100 transition-colors">Pending</button>
-                  <button onClick={() => handleUpdateStatus(viewOrder.id, 'Processing')} className="flex-1 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold py-2 rounded-lg hover:bg-blue-100 transition-colors">Processing</button>
-                  <button onClick={() => handleUpdateStatus(viewOrder.id, 'Dispatched')} className="flex-1 bg-orange-50 border border-orange-200 text-orange-700 text-xs font-bold py-2 rounded-lg hover:bg-orange-100 transition-colors">Dispatched</button>
-                  <button onClick={() => handleUpdateStatus(viewOrder.id, 'Delivered')} className="flex-1 bg-green-50 border border-green-200 text-green-700 text-xs font-bold py-2 rounded-lg hover:bg-green-100 transition-colors">Delivered</button>
+                <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+                  <button onClick={() => handleUpdateStatus(viewOrder.id, 'Pending')} className="w-full sm:flex-1 bg-white border border-gray-200 text-gray-600 text-xs font-bold py-2 rounded-lg hover:bg-gray-100 transition-colors">Pending</button>
+                  <button onClick={() => handleUpdateStatus(viewOrder.id, 'Processing')} className="w-full sm:flex-1 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold py-2 rounded-lg hover:bg-blue-100 transition-colors">Processing</button>
+                  <button onClick={() => handleUpdateStatus(viewOrder.id, 'Dispatched')} className="w-full sm:flex-1 bg-orange-50 border border-orange-200 text-orange-700 text-xs font-bold py-2 rounded-lg hover:bg-orange-100 transition-colors">Dispatched</button>
+                  <button onClick={() => handleUpdateStatus(viewOrder.id, 'Delivered')} className="w-full sm:flex-1 bg-green-50 border border-green-200 text-green-700 text-xs font-bold py-2 rounded-lg hover:bg-green-100 transition-colors">Delivered</button>
                 </div>
               </div>
 
-              <div className="flex gap-4 pt-2">
+            </div>
+            
+            {/* Modal Sticky Footer */}
+            <div className="bg-white p-4 sm:p-6 border-t border-gray-100 flex flex-col sm:flex-row gap-3 mt-auto sticky bottom-0 z-10">
                 <button
                   onClick={() => handleCancelOrder(viewOrder.id)}
-                  className="flex-1 bg-red-50 text-red-600 text-sm font-bold py-3 rounded-xl hover:bg-red-100 transition-colors flex justify-center items-center gap-2 shadow-sm"
+                  className="w-full sm:flex-1 bg-red-50 text-red-600 text-sm font-bold py-3 rounded-xl hover:bg-red-100 transition-colors flex justify-center items-center gap-2 shadow-sm order-2 sm:order-1"
                 >
                   <Trash2 className="h-4 w-4" /> Cancel & Return Stock
                 </button>
                 <button
                   onClick={() => setViewOrder(null)}
-                  className="flex-1 bg-gray-900 text-white text-sm font-bold py-3 rounded-xl hover:bg-gray-800 transition-colors"
+                  className="w-full sm:flex-1 bg-gray-900 text-white text-sm font-bold py-3 rounded-xl hover:bg-gray-800 transition-colors order-1 sm:order-2"
                 >
                   Done
                 </button>
               </div>
-            </div>
           </div>
         </div>
       )}
