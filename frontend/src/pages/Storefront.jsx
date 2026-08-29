@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Database, User, LogOut, ShoppingCart, Search, Grid, ShieldCheck, ShoppingBag, ChevronDown, Package, Settings, X, Tag, ChevronLeft, ChevronRight } from 'lucide-react';
+import { 
+  Database, User, LogOut, ShoppingCart, Search, Grid, 
+  ShieldCheck, ShoppingBag, ChevronDown, Package, 
+  Settings, X, Tag, ChevronLeft, ChevronRight 
+} from 'lucide-react';
 import apiClient from '../api/client';
 
 export default function Storefront({ user, handleLogout, products, categories, addToCart, cartCount }) {
@@ -11,6 +15,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
 
   const [currentSlide, setCurrentSlide] = useState(0);
 
+  // Default fallback slides
   const [slides, setSlides] = useState([
     { id: 1, image: '/slider1.jpeg', alt: 'Everyday Needs Delivered Fast' },
     { id: 2, image: '/slider2.jpeg', alt: '1 Year Anniversary C_Express' },
@@ -51,6 +56,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
     return () => clearInterval(timer);
   }, [slides.length]);
 
+  // Secure admin check based on actual user data
   const actualUser = user?.user || user;
   const isAdmin = actualUser && (actualUser.is_admin == 1 || actualUser.is_admin === true);
 
@@ -66,6 +72,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
   return (
     <div className="min-h-screen bg-[#f1f1f2] font-sans text-[#282828] flex flex-col relative">
       
+      { }
       {isAdmin && (
         <div className="bg-green-200 text-green-900 text-xs font-bold py-1.5 px-4 flex justify-center items-center gap-2 tracking-wide">
           <ShieldCheck className="h-4 w-4" />
@@ -73,11 +80,13 @@ export default function Storefront({ user, handleLogout, products, categories, a
         </div>
       )}
 
+      {}
       <nav className="bg-white shadow-sm p-3 flex flex-col md:flex-row justify-between items-center gap-3 px-4 sm:px-8 sticky top-0 z-40">
         <Link to="/" className="flex items-center">
           <img src="/logo-vertical.png" alt="CEXPRESS MINIMART" className="h-12 object-contain mix-blend-multiply" />
         </Link>
         
+        {/* Desktop Search Bar */}
         <div className="hidden md:flex flex-1 max-w-xl mx-8 relative">
           <input 
             type="text" 
@@ -89,6 +98,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
           <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
         </div>
 
+        {}
         <div className="flex items-center space-x-6">
           {/* Desktop Only Button */}
           {isAdmin && (
@@ -108,6 +118,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
                 <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
               </button>
 
+              {}
               {isUserMenuOpen && (
                 <div className="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 animate-fade-in">
                   <div className="p-4 border-b border-gray-50 bg-gray-50/50">
@@ -151,6 +162,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
             </Link>
           )}
           
+          {}
           <Link to="/cart" className="flex items-center space-x-1 text-gray-700 hover:text-[#f68b1e] transition-colors relative">
             <ShoppingCart className="h-6 w-6" />
             <span className="hidden md:inline font-medium text-sm">Cart</span>
@@ -163,7 +175,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
         </div>
       </nav>
 
-      {/* Mobile Search Bar */}
+      {}
       <div className="md:hidden px-4 py-3 bg-white border-b border-gray-100">
         <div className="relative">
           <input 
@@ -179,7 +191,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
 
       <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         
-        {/* DYNAMIC HERO SLIDER */}
+        {}
         <div className="relative w-full h-[250px] md:h-[400px] rounded-2xl overflow-hidden shadow-md mb-8 group bg-white">
           {slides.map((slide, index) => (
             <div
@@ -194,6 +206,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
             </div>
           ))}
           
+          {/* Slider Pagination Dots */}
           <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center gap-2">
             {slides.map((_, index) => (
               <button
@@ -205,6 +218,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
             ))}
           </div>
           
+          {/* Slider Controls */}
           <button 
             onClick={() => setCurrentSlide(prev => prev === 0 ? slides.length - 1 : prev - 1)} 
             className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm"
@@ -219,6 +233,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
           </button>
         </div>
 
+        {}
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="w-full lg:w-64 flex-shrink-0">
             <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm sticky top-24">
@@ -240,6 +255,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
             </div>
           </div>
 
+          {}
           <div className="flex-grow">
             <div className="mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-2 border-b border-gray-100 pb-4">
               <h2 className="text-xl font-bold text-gray-800">
@@ -293,6 +309,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
         </div>
       </main>
 
+      {}
       <footer className="bg-[#282828] text-white py-12 mt-auto">
         <div className="max-w-7xl mx-auto px-4 flex flex-col items-center text-center">
           <img src="/logo-circular.png" alt="CEXPRESS MINIMART" className="h-20 w-20 rounded-full mb-4 shadow-lg object-contain bg-white" />
@@ -300,6 +317,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
         </div>
       </footer>
 
+      {}
       {viewProduct && (
         <div 
           className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
