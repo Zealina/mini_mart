@@ -12,6 +12,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
   const [searchQuery, setSearchQuery] = useState('');
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [viewProduct, setViewProduct] = useState(null);
+  const [isWelcomeOpen, setIsWelcomeOpen] = useState(true);
 
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -56,6 +57,17 @@ export default function Storefront({ user, handleLogout, products, categories, a
     return () => clearInterval(timer);
   }, [slides.length]);
 
+  useEffect(() => {
+    if (!isWelcomeOpen) return undefined;
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') setIsWelcomeOpen(false);
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isWelcomeOpen]);
+
   // Secure admin check based on actual user data
   const actualUser = user?.user || user;
   const isAdmin = actualUser && (actualUser.is_admin == 1 || actualUser.is_admin === true);
@@ -71,6 +83,46 @@ export default function Storefront({ user, handleLogout, products, categories, a
 
   return (
     <div className="min-h-screen bg-[#f1f1f2] font-sans text-[#282828] flex flex-col relative">
+
+      {isWelcomeOpen && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setIsWelcomeOpen(false);
+          }}
+        >
+          <section
+            className="relative w-full max-w-md rounded-2xl bg-white p-7 text-center shadow-2xl"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="welcome-title"
+          >
+            <button
+              type="button"
+              onClick={() => setIsWelcomeOpen(false)}
+              className="absolute right-3 top-3 rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
+              aria-label="Close welcome message"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <ShoppingBag className="mx-auto mb-4 h-10 w-10 text-[#f68b1e]" />
+            <h1 id="welcome-title" className="mb-2 text-2xl font-bold text-gray-900">
+              Welcome to CEXPRESS MINIMART
+            </h1>
+            <p className="mb-6 text-sm leading-6 text-gray-600">
+              Your everyday essentials are just a few clicks away.
+            </p>
+            <button
+              type="button"
+              onClick={() => setIsWelcomeOpen(false)}
+              className="w-full rounded-lg bg-[#f68b1e] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#df7610]"
+            >
+              Start Shopping
+            </button>
+          </section>
+        </div>
+      )}
       
       { }
       {isAdmin && (
