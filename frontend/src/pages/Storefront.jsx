@@ -257,6 +257,13 @@ export default function Storefront({ user, handleLogout, products, categories, a
               />
             </div>
           ))}
+
+          <div className="absolute inset-x-0 bottom-0 z-20 bg-black/55 px-5 py-4 text-white md:px-8">
+            <h2 className="text-xl font-black md:text-3xl">Abuja&apos;s Premier Online Grocery Store</h2>
+            <p className="mt-1 max-w-2xl text-sm leading-5 md:text-base">
+              Enjoy fast delivery across Abuja, delivering to your doorstep anywhere in the FCT.
+            </p>
+          </div>
           
           {/* Slider Pagination Dots */}
           <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center gap-2">
