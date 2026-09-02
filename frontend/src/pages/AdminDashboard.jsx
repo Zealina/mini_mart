@@ -817,7 +817,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                         <div className="divide-y divide-gray-100">
                           {filteredCategories.map(cat => (
                             <div key={cat.id} className="py-3 flex justify-between items-center group">
-                              <div className="flex items-center gap-2">
+                              <div className="flex min-w-0 items-center gap-2">
                                 <Tag className="h-4 w-4 text-[#f68b1e] flex-shrink-0" />
                                 <span className="font-medium text-gray-800 text-sm truncate">{cat.name}</span>
                                 <span className="text-[10px] text-gray-300 font-mono hidden sm:inline">({cat.id.substring(0, 8)})</span>

@@ -144,7 +144,7 @@ export default function Orders({ user, products }) {
                   </h3>
                   {renderStatusBadge(selectedOrder.status)}
                 </div>
-                <p className="text-xs text-gray-400 font-mono mt-2">UUID: {selectedOrder.id}</p>
+                <p className="break-all text-xs text-gray-400 font-mono mt-2">UUID: {selectedOrder.id}</p>
               </div>
               <button 
                 onClick={() => setSelectedOrder(null)}
@@ -205,7 +205,7 @@ export default function Orders({ user, products }) {
                             <ShoppingBag className="h-5 w-5 text-gray-300" />
                           )}
                         </div>
-                        <div className="flex-grow">
+                        <div className="min-w-0 flex-grow">
                           <p className="text-sm font-bold text-gray-800 line-clamp-1">{productInfo ? productInfo.name : 'Unknown Product'}</p>
                           <p className="text-xs text-gray-400 mt-0.5 font-medium">{productInfo?.brand || 'Generic'}</p>
                         </div>

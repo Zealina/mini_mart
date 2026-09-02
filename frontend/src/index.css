@@ -10,5 +10,6 @@ body {
   background-color: var(--color-brand-light);
   color: var(--color-brand-dark);
   min-height: 100vh;
+  overflow-x: hidden;
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }

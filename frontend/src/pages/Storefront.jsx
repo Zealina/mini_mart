@@ -151,7 +151,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
         </div>
 
         {}
-        <div className="flex items-center space-x-6">
+        <div className="flex min-w-0 items-center space-x-3 sm:space-x-6">
           {/* Desktop Only Button */}
           {isAdmin && (
             <Link to="/admin" className="text-xs font-bold text-gray-600 hover:text-[#f68b1e] border border-gray-200 px-3 py-1.5 rounded-lg hidden md:flex items-center gap-1.5 transition-colors shadow-sm">
@@ -166,7 +166,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
                 className="flex items-center space-x-2 text-gray-700 hover:text-[#f68b1e] font-medium transition-colors cursor-pointer p-1"
               >
                 <User className="h-5 w-5 text-[#f68b1e]" />
-                <span className="text-sm">Hi, {actualUser.first_name || 'User'}</span>
+                <span className="max-w-[7rem] truncate text-sm sm:max-w-none">Hi, {actualUser.first_name || 'User'}</span>
                 <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
               </button>
 
@@ -398,7 +398,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
               <span className="text-xs font-bold text-[#f68b1e] uppercase tracking-wider mb-2">
                 {categories.find(c => c.id === viewProduct.category_id)?.name || 'Product Detail'}
               </span>
-              <h2 className="text-2xl font-black text-gray-900 leading-tight mb-2">{viewProduct.name}</h2>
+              <h2 className="break-words text-2xl font-black text-gray-900 leading-tight mb-2">{viewProduct.name}</h2>
               <div className="flex flex-wrap items-center gap-3 mb-6 border-b border-gray-100 pb-4">
                 <span className="flex items-center gap-1 text-sm font-semibold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-md">
                   <Tag className="h-3.5 w-3.5" /> {viewProduct.brand || 'No Brand'}
@@ -412,7 +412,7 @@ export default function Storefront({ user, handleLogout, products, categories, a
 
               <div className="flex-grow">
                 <h4 className="text-sm font-bold text-gray-900 mb-2">Description</h4>
-                <p className="text-gray-500 text-sm leading-relaxed mb-6 whitespace-pre-wrap">
+                <p className="break-words text-gray-500 text-sm leading-relaxed mb-6 whitespace-pre-wrap">
                   {viewProduct.description || 'No detailed description available for this item.'}
                 </p>
               </div>

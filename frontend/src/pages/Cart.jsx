@@ -172,7 +172,7 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
                       <ShoppingBag className="h-8 w-8 text-gray-300 stroke-1" />
                     )}
                   </div>
-                  <div className="flex-grow">
+                  <div className="min-w-0 flex-grow">
                     <h4 className="font-semibold text-gray-800 text-sm leading-snug line-clamp-1">{item.name}</h4>
                     <p className="text-xs text-gray-400 mt-0.5">{item.brand || 'Generic'}</p>
                     <p className="text-gray-900 font-bold mt-1 text-sm">₦{parseFloat(item.price).toLocaleString()}</p>

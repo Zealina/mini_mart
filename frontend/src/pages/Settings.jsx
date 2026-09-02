@@ -97,12 +97,12 @@ export default function Settings({ user, setUser }) {
             <div className="h-16 w-16 bg-gradient-to-br from-[#f68b1e] to-orange-400 text-white rounded-full flex items-center justify-center text-2xl font-black shadow-inner">
               {actualUser.first_name?.charAt(0).toUpperCase()}
             </div>
-            <div>
-              <h3 className="text-xl font-black text-gray-900 flex items-center gap-2">
+            <div className="min-w-0 text-center md:text-left">
+              <h3 className="break-words text-xl font-black text-gray-900 flex items-center justify-center gap-2 md:justify-start">
                 {actualUser.first_name} {actualUser.last_name}
                 {isSuperAdmin && <Shield className="h-4 w-4 text-green-500" title="Super Administrator" />}
               </h3>
-              <p className="text-sm text-gray-500 flex items-center gap-1.5 mt-1">
+              <p className="break-all text-sm text-gray-500 flex items-center justify-center gap-1.5 mt-1 md:justify-start">
                 <Mail className="h-3.5 w-3.5" /> {actualUser.email}
               </p>
             </div>
