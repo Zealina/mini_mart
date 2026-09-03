@@ -2,6 +2,7 @@
 """Manage users"""
 
 from api.v1.views import app_views
+from api.v1.views.auth import super_admin_required
 from flask import jsonify, request
 from models import storage
 from models.user import User
@@ -60,6 +61,28 @@ def remove_user(user_id):
     if deleted:
         return jsonify({"success": "OK"}), 200
     return jsonify({"error": "user not found"}), 404
+
+
+@app_views.route('/users/access', methods=['POST'])
+@super_admin_required()
+def grant_staff_access():
+    """Grant admin or super-admin access to an existing account by email."""
+    data = request.get_json() or {}
+    email = (data.get('email') or '').strip().lower()
+    role = data.get('role', 'sub_admin')
+    if not email or role not in ('sub_admin', 'super_admin'):
+        return jsonify({"error": "email and a valid role are required"}), 400
+
+    user = UserRepo.get_by_email(email)
+    if not user:
+        return jsonify({"error": "Create a customer account with this email before granting staff access."}), 404
+
+    updated = UserRepo.update(
+        id=user.id,
+        is_admin=True,
+        is_super_admin=role == 'super_admin'
+    )
+    return jsonify(updated.to_dict()), 200
 
 
 @app_views.route('/store-settings', methods=['GET'])

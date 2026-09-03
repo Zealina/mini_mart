@@ -49,6 +49,8 @@ class Order(BaseModel, Base):
         order_dict['contact_phone'] = getattr(self, 'contact_phone', None)
         order_dict['gps_link'] = getattr(self, 'gps_link', None)
         order_dict['status'] = getattr(self, 'status', 'Pending')
+        order_dict['payment_confirmed'] = order_dict['status'] == 'Paid'
+        order_dict['payment_confirmed_by'] = order_dict.get('payment_confirmed_by')
         
         if hasattr(self, 'order_items') and self.order_items is not None:
             order_dict['order_items'] = [item.to_dict() for item in self.order_items]

@@ -29,12 +29,13 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
   const [staffList, setStaffList] = useState([]);
   const [staffTrigger, setStaffTrigger] = useState(0);
   const [staffForm, setStaffForm] = useState({
-    first_name: '', last_name: '', email: '', whatsapp_number: '', password: '', role: 'sub_admin'
+    email: '', role: 'sub_admin'
   });
 
   const actualUser = user?.user || user;
   const adminId = actualUser?.id || actualUser?.user_id || actualUser?.uuid;
   const isSuperAdmin = actualUser && (actualUser.is_super_admin === true || actualUser.is_super_admin === 1 || actualUser.is_super_admin === 'true' || actualUser.is_super_admin === 'True');
+  const canClearTestOrders = actualUser?.email?.trim().toLowerCase() === 'masterbright02@gmail.com';
 
   useEffect(() => {
     const fetchAdminOrders = async () => {
@@ -131,6 +132,19 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
       displayAlert('success', 'Payment confirmed!');
     } catch (err) {
       displayAlert('error', getApiErrorMessage(err, 'Failed to confirm payment.'));
+    }
+  };
+
+  const handleClearTestOrders = async () => {
+    if (!window.confirm('Clear all tested orders? Their reserved inventory will be returned to stock.')) return;
+    try {
+      const response = await apiClient.delete('/orders/test-data');
+      displayAlert('success', `${response.data.deleted} tested order${response.data.deleted === 1 ? '' : 's'} cleared.`);
+      setViewOrder(null);
+      setOrders([]);
+      triggerReload();
+    } catch (err) {
+      displayAlert('error', getApiErrorMessage(err, 'Failed to clear tested orders.'));
     }
   };
 
@@ -283,17 +297,12 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
   const handleStaffSubmit = async (e) => {
     e.preventDefault();
     try {
-      await apiClient.post('/users', {
-        first_name: staffForm.first_name,
-        last_name: staffForm.last_name,
+      await apiClient.post('/users/access', {
         email: staffForm.email,
-        whatsapp_number: staffForm.whatsapp_number,
-        password: staffForm.password,
-        is_admin: true,
-        is_super_admin: staffForm.role === 'super_admin'
+        role: staffForm.role
       });
-      displayAlert('success', `${staffForm.role === 'super_admin' ? 'Super Admin' : 'Sub-Admin'} account for ${staffForm.first_name} created successfully!`);
-      setStaffForm({ first_name: '', last_name: '', email: '', whatsapp_number: '', password: '', role: 'sub_admin' });
+      displayAlert('success', `${staffForm.role === 'super_admin' ? 'Super Admin' : 'Sub-Admin'} access granted to ${staffForm.email}.`);
+      setStaffForm({ email: '', role: 'sub_admin' });
       setStaffTrigger(prev => prev + 1);
     } catch (err) {
       displayAlert('error', getApiErrorMessage(err, 'Failed to create staff account.'));
@@ -489,11 +498,18 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
           {activeTab === 'orders' && (
             <div className="col-span-1 lg:col-span-3">
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 md:p-6 overflow-hidden">
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
                   <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                     <FileText className="h-4 w-4" /> Customer Purchase Orders
                   </h3>
-                  {searchQuery && <span className="text-xs font-bold text-[#f68b1e] bg-orange-50 px-2 py-1 rounded">{filteredOrders.length} Results Found</span>}
+                  <div className="flex flex-wrap items-center gap-2">
+                    {searchQuery && <span className="text-xs font-bold text-[#f68b1e] bg-orange-50 px-2 py-1 rounded">{filteredOrders.length} Results Found</span>}
+                    {canClearTestOrders && (
+                      <button onClick={handleClearTestOrders} className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[10px] font-black uppercase text-red-600 transition-colors hover:bg-red-600 hover:text-white">
+                        Clear Tested Orders
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {filteredOrders.length === 0 ? (
@@ -587,27 +603,9 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                   </p>
 
                   <form onSubmit={handleStaffSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">First Name *</label>
-                        <input required type="text" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f68b1e]" value={staffForm.first_name} onChange={e => setStaffForm({ ...staffForm, first_name: e.target.value })} />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Last Name *</label>
-                        <input required type="text" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f68b1e]" value={staffForm.last_name} onChange={e => setStaffForm({ ...staffForm, last_name: e.target.value })} />
-                      </div>
-                    </div>
                     <div>
                       <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Email Address *</label>
-                      <input required type="email" placeholder="staff@foodmart.com" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f68b1e]" value={staffForm.email} onChange={e => setStaffForm({ ...staffForm, email: e.target.value })} />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-gray-500 uppercase mb-1">WhatsApp Number *</label>
-                      <input required type="tel" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f68b1e]" value={staffForm.whatsapp_number} onChange={e => setStaffForm({ ...staffForm, whatsapp_number: e.target.value })} />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Temporary Password *</label>
-                      <input required type="text" placeholder="e.g. TempPass123" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f68b1e]" value={staffForm.password} onChange={e => setStaffForm({ ...staffForm, password: e.target.value })} />
+                      <input required type="email" placeholder="existing-user@example.com" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f68b1e]" value={staffForm.email} onChange={e => setStaffForm({ ...staffForm, email: e.target.value })} />
                     </div>
 
                     <div>
@@ -817,7 +815,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                         <div className="divide-y divide-gray-100">
                           {filteredCategories.map(cat => (
                             <div key={cat.id} className="py-3 flex justify-between items-center group">
-                              <div className="flex min-w-0 items-center gap-2">
+                              <div className="flex items-center gap-2">
                                 <Tag className="h-4 w-4 text-[#f68b1e] flex-shrink-0" />
                                 <span className="font-medium text-gray-800 text-sm truncate">{cat.name}</span>
                                 <span className="text-[10px] text-gray-300 font-mono hidden sm:inline">({cat.id.substring(0, 8)})</span>

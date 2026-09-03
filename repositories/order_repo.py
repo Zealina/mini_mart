@@ -70,6 +70,20 @@ class OrderRepo:
         return True
 
     @classmethod
+    def clear_all(cls) -> int:
+        """Delete all orders and return reserved inventory to stock."""
+        orders = cls.all()
+        for order in orders:
+            for item in order.order_items:
+                product = storage.get(Product, item.product_id)
+                if product:
+                    product.stock += item.quantity
+                    product.save()
+            storage.delete(order)
+        storage.save()
+        return len(orders)
+
+    @classmethod
     def add_item(cls, order_id: str, product_id: str, quantity: int) -> OrderItem | None:
         order = cls.get(order_id)
         if not order:

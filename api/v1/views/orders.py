@@ -45,6 +45,7 @@ MAX_PROOF_SIZE_BYTES = 10 * 1024 * 1024  # 10MB, mirrors the frontend limit
 
 PAID_STATUS = "Paid"
 PENDING_STATUS = "Pending Payment Confirmation"
+TEST_DATA_ADMIN_EMAIL = "masterbright02@gmail.com"
 
 # ---------------------------------------------------------------------------
 # Branding: logo assets + palette shared by the invoice and receipt PDFs.
@@ -573,6 +574,18 @@ def remove_order(order_id):
     if OrderRepo.delete(order_id):
         return jsonify({"success": "OK"}), 200
     return jsonify({"error": "order not found"}), 404
+
+
+@app_views.route('/orders/test-data', methods=['DELETE'])
+@jwt_required()
+def clear_test_orders():
+    """Allow the designated owner account to clear test orders and restock items."""
+    user = UserRepo.get(get_jwt_identity())
+    if not user or (user.email or '').strip().lower() != TEST_DATA_ADMIN_EMAIL:
+        return jsonify({"error": "only the designated test-data administrator may clear orders"}), 403
+
+    deleted_count = OrderRepo.clear_all()
+    return jsonify({"success": True, "deleted": deleted_count}), 200
 
 @app_views.route('/orders/<order_id>/items', methods=['GET'])
 @jwt_required()

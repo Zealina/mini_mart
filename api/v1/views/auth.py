@@ -163,3 +163,19 @@ def admin_required():
         return decorator
 
     return wrapper
+
+
+def super_admin_required():
+    """Require an authenticated super-admin account."""
+    def wrapper(fn):
+        @wraps(fn)
+        def decorator(*args, **kwargs):
+            verify_jwt_in_request()
+            user = UserRepo.get(get_jwt_identity())
+            if user and user.is_super_admin:
+                return fn(*args, **kwargs)
+            return jsonify(error="super admins only!"), 403
+
+        return decorator
+
+    return wrapper
