@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { 
   Database, User, LogOut, ShoppingCart, Search, Grid, 
   ShieldCheck, ShoppingBag, ChevronDown, Package, 
-  Settings, X, Tag, ChevronLeft, ChevronRight 
+  Settings, X, Tag, MapPin, ChevronLeft, ChevronRight 
 } from 'lucide-react';
 import apiClient from '../api/client';
 
@@ -259,9 +259,9 @@ export default function Storefront({ user, handleLogout, products, categories, a
           ))}
 
           <div className="absolute inset-x-0 bottom-0 z-20 bg-black/55 px-5 py-4 text-white md:px-8">
-            <h2 className="text-xl font-black md:text-3xl">Abuja&apos;s Premier Online Grocery Store</h2>
+            <h2 className="text-xl font-black md:text-3xl">C_Express Mini-Mart: Quality Products, Affordable Prices.</h2>
             <p className="mt-1 max-w-2xl text-sm leading-5 md:text-base">
-              Enjoy fast delivery across Abuja, delivering to your doorstep anywhere in the FCT.
+              Your trusted neighborhood source in Abuja for fresh foodstuff, groceries, and household essentials.
             </p>
           </div>
           
@@ -291,6 +291,35 @@ export default function Storefront({ user, handleLogout, products, categories, a
             <ChevronRight className="h-6 w-6" />
           </button>
         </div>
+
+        <section aria-labelledby="our-promise-heading" className="mb-8">
+          <h2 id="our-promise-heading" className="mb-4 text-xl font-bold text-gray-800">Our Promise</h2>
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            <article className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
+              <Tag className="mb-3 h-8 w-8 text-[#f68b1e]" aria-hidden="true" />
+              <h3 className="mb-2 text-lg font-bold text-gray-900">Affordable &amp; Reliable</h3>
+              <p className="text-sm leading-6 text-gray-600">
+                We are committed to providing quality foodstuff, cooking essentials, and everyday household needs at highly competitive prices for families and businesses.
+              </p>
+            </article>
+
+            <article className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
+              <Package className="mb-3 h-8 w-8 text-[#f68b1e]" aria-hidden="true" />
+              <h3 className="mb-2 text-lg font-bold text-gray-900">Home Delivery in the FCT</h3>
+              <p className="text-sm leading-6 text-gray-600">
+                Shop from home or the office. Simply place your order and we will deliver your rice, pasta, provisions, and groceries directly to your doorstep anywhere within Abuja.
+              </p>
+            </article>
+
+            <article className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
+              <MapPin className="mb-3 h-8 w-8 text-[#f68b1e]" aria-hidden="true" />
+              <h3 className="mb-2 text-lg font-bold text-gray-900">Located in Karmo Market</h3>
+              <p className="text-sm leading-6 text-gray-600">
+                Prefer to shop in person? Visit us Monday through Saturday at Shop 59, Farmers Block, Karmo District Market, FCT, Abuja.
+              </p>
+            </article>
+          </div>
+        </section>
 
         {}
         <div className="flex flex-col lg:flex-row gap-8">
