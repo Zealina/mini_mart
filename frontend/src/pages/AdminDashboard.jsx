@@ -21,6 +21,7 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
 
   const [orders, setOrders] = useState([]);
   const [viewOrder, setViewOrder] = useState(null);
+  const [selectedTestOrderIds, setSelectedTestOrderIds] = useState([]);
 
   const [carouselImages, setCarouselImages] = useState([]);
   const [carouselFiles, setCarouselFiles] = useState([]);
@@ -135,13 +136,34 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
     }
   };
 
+  const toggleTestOrder = (orderId) => {
+    setSelectedTestOrderIds(prev => prev.includes(orderId)
+      ? prev.filter(id => id !== orderId)
+      : [...prev, orderId]
+    );
+  };
+
+  const toggleVisibleTestOrders = () => {
+    const visibleIds = filteredOrders.map(order => order.id);
+    const allVisibleSelected = visibleIds.every(orderId => selectedTestOrderIds.includes(orderId));
+    setSelectedTestOrderIds(prev => allVisibleSelected
+      ? prev.filter(orderId => !visibleIds.includes(orderId))
+      : [...new Set([...prev, ...visibleIds])]
+    );
+  };
+
   const handleClearTestOrders = async () => {
-    if (!window.confirm('Clear all tested orders? Their reserved inventory will be returned to stock.')) return;
+    if (selectedTestOrderIds.length === 0) {
+      displayAlert('error', 'Select at least one tested order first.');
+      return;
+    }
+    if (!window.confirm(`Clear ${selectedTestOrderIds.length} selected tested order${selectedTestOrderIds.length === 1 ? '' : 's'}? Their reserved inventory will be returned to stock.`)) return;
     try {
-      const response = await apiClient.delete('/orders/test-data');
+      const response = await apiClient.delete('/orders/test-data', { data: { order_ids: selectedTestOrderIds } });
       displayAlert('success', `${response.data.deleted} tested order${response.data.deleted === 1 ? '' : 's'} cleared.`);
       setViewOrder(null);
-      setOrders([]);
+      setOrders(prev => prev.filter(order => !selectedTestOrderIds.includes(order.id)));
+      setSelectedTestOrderIds([]);
       triggerReload();
     } catch (err) {
       displayAlert('error', getApiErrorMessage(err, 'Failed to clear tested orders.'));
@@ -505,8 +527,8 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                   <div className="flex flex-wrap items-center gap-2">
                     {searchQuery && <span className="text-xs font-bold text-[#f68b1e] bg-orange-50 px-2 py-1 rounded">{filteredOrders.length} Results Found</span>}
                     {canClearTestOrders && (
-                      <button onClick={handleClearTestOrders} className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[10px] font-black uppercase text-red-600 transition-colors hover:bg-red-600 hover:text-white">
-                        Clear Tested Orders
+                      <button onClick={handleClearTestOrders} disabled={selectedTestOrderIds.length === 0} className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[10px] font-black uppercase text-red-600 transition-colors hover:bg-red-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-50">
+                        Clear Selected ({selectedTestOrderIds.length})
                       </button>
                     )}
                   </div>
@@ -523,7 +545,17 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                     <table className="w-full text-left border-collapse text-sm min-w-[700px]">
                       <thead>
                         <tr className="border-b border-gray-200 text-gray-500 font-bold bg-gray-50/50 uppercase text-xs tracking-wider">
-                          <th className="p-4 rounded-tl-lg whitespace-nowrap">Order Number</th>
+                          {canClearTestOrders && (
+                            <th className="p-4 rounded-tl-lg whitespace-nowrap">
+                              <input
+                                type="checkbox"
+                                checked={filteredOrders.length > 0 && filteredOrders.every(order => selectedTestOrderIds.includes(order.id))}
+                                onChange={toggleVisibleTestOrders}
+                                aria-label="Select visible orders"
+                              />
+                            </th>
+                          )}
+                          <th className={`p-4 whitespace-nowrap ${!canClearTestOrders ? 'rounded-tl-lg' : ''}`}>Order Number</th>
                           <th className="p-4 whitespace-nowrap">Customer</th>
                           <th className="p-4 whitespace-nowrap">Items</th>
                           <th className="p-4 whitespace-nowrap">Contact Number</th>
@@ -535,6 +567,16 @@ export default function AdminDashboard({ user, categories, products, triggerRelo
                       <tbody className="divide-y divide-gray-100">
                         {filteredOrders.map((order) => (
                           <tr key={order.id} className="hover:bg-orange-50/30 transition-colors group">
+                            {canClearTestOrders && (
+                              <td className="p-4">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedTestOrderIds.includes(order.id)}
+                                  onChange={() => toggleTestOrder(order.id)}
+                                  aria-label={`Select order ${order.orderNumber}`}
+                                />
+                              </td>
+                            )}
                             <td className="p-4">
                               <div className="font-black text-gray-900 text-sm whitespace-nowrap">Order #{order.orderNumber}</div>
                               <div className="font-mono text-[10px] text-gray-400 mt-0.5 whitespace-nowrap">UUID: {(order.id || '').toString().substring(0, 8)}</div>

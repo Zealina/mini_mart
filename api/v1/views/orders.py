@@ -579,12 +579,17 @@ def remove_order(order_id):
 @app_views.route('/orders/test-data', methods=['DELETE'])
 @jwt_required()
 def clear_test_orders():
-    """Allow the designated owner account to clear test orders and restock items."""
+    """Allow the designated owner account to clear selected test orders."""
     user = UserRepo.get(get_jwt_identity())
     if not user or (user.email or '').strip().lower() != TEST_DATA_ADMIN_EMAIL:
         return jsonify({"error": "only the designated test-data administrator may clear orders"}), 403
 
-    deleted_count = OrderRepo.clear_all()
+    data = request.get_json() or {}
+    order_ids = data.get('order_ids')
+    if not isinstance(order_ids, list) or not order_ids:
+        return jsonify({"error": "order_ids must be a non-empty list"}), 400
+
+    deleted_count = sum(1 for order_id in order_ids if OrderRepo.delete(order_id))
     return jsonify({"success": True, "deleted": deleted_count}), 200
 
 @app_views.route('/orders/<order_id>/items', methods=['GET'])
