@@ -6,6 +6,7 @@ from api.v1.views.auth import super_admin_required
 from flask import jsonify, request
 from models import storage
 from models.user import User
+from models.pending_staff_access import PendingStaffAccess
 from repositories.user_repo import UserRepo
 from sqlalchemy.exc import IntegrityError
 
@@ -39,6 +40,21 @@ def create_user():
             "error": "incorrect/incomplete parameters",
             "message": str(e)
         }), 400
+
+    pending_access = storage.get_by_attr(
+        PendingStaffAccess,
+        email=(new.email or '').strip().lower()
+    )
+    if pending_access:
+        updated = UserRepo.update(
+            id=new.id,
+            is_admin=True,
+            is_super_admin=pending_access.role == 'super_admin'
+        )
+        storage.delete(pending_access)
+        storage.save()
+        new = updated
+
     from email_service import send_welcome_email
 
     send_welcome_email(new)
@@ -75,7 +91,13 @@ def grant_staff_access():
 
     user = UserRepo.get_by_email(email)
     if not user:
-        return jsonify({"error": "Create a customer account with this email before granting staff access."}), 404
+        pending = storage.get_by_attr(PendingStaffAccess, email=email)
+        if pending:
+            pending.role = role
+            pending.save()
+        else:
+            PendingStaffAccess(email=email, role=role).save()
+        return jsonify({"message": f"Staff access saved for {email}. It will activate when they register.", "pending": True}), 202
 
     updated = UserRepo.update(
         id=user.id,

@@ -14,6 +14,8 @@ from flask_jwt_extended import (
 )
 from flask_jwt_extended import get_jwt, verify_jwt_in_request
 from repositories.user_repo import UserRepo
+from models import storage
+from models.pending_staff_access import PendingStaffAccess
 from functools import wraps
 from datetime import datetime, timedelta
 from email_service import send_reset_password_email
@@ -64,6 +66,20 @@ def register():
         return jsonify({"error": "An account with this Email or WhatsApp number already exists."}), 400
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
+
+    pending_access = storage.get_by_attr(
+        PendingStaffAccess,
+        email=(new_user.email or '').strip().lower()
+    )
+    if pending_access:
+        UserRepo.update(
+            id=new_user.id,
+            is_admin=True,
+            is_super_admin=pending_access.role == 'super_admin'
+        )
+        storage.delete(pending_access)
+        storage.save()
+
     return jsonify(
         {"message": "User registered successfully", "id": new_user.id, "email": new_user.email}
     ), 201
