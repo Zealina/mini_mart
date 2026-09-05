@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ShoppingCart, Minus, Plus, Trash2, CheckCircle2, AlertCircle, ShoppingBag, ArrowLeft, MapPin, CreditCard, Phone, Landmark, Upload, FileText, X, Paperclip } from 'lucide-react';
 import apiClient, { getApiErrorMessage } from '../api/client';
 
@@ -7,7 +7,6 @@ const MAX_RECEIPT_SIZE_MB = 10;
 const ACCEPTED_RECEIPT_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'application/pdf'];
 
 export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, user, triggerReload }) {
-  const navigate = useNavigate();
   const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const [isOrdering, setIsOrdering] = useState(false);
   const [orderStatus, setOrderStatus] = useState({ type: '', message: '' });
@@ -109,19 +108,34 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
       payload.append('phone', contactPhone);
       payload.append('receipt', receiptFile);
 
-      await apiClient.post('/orders', payload, {
+      const response = await apiClient.post('/orders', payload, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       
       // ✅ TRIGGER RELOAD: Instantly fetch updated inventory stocks
       if(triggerReload) triggerReload(); 
-      
-      setOrderStatus({ type: 'success', message: 'Order and receipt submitted successfully! Generating your invoice...' });
-      
-      setTimeout(() => {
-        clearCart();
-        navigate('/orders');
-      }, 2000);
+
+      const itemSummary = cart
+        .map(item => `- ${item.name} x${item.quantity}`)
+        .join('\n');
+      const orderReference = response.data?.id || response.data?.order_id || 'Pending confirmation';
+      const whatsappMessage = [
+        'Hello C Express Minimart,',
+        '',
+        'I have just placed an order through your website. Please help me confirm the price and delivery arrangements.',
+        '',
+        `Order reference: ${orderReference}`,
+        'Items ordered:',
+        itemSummary,
+        '',
+        `Delivery location: ${deliveryAddress.trim()}`,
+        `Contact phone: ${contactPhone.trim()}`,
+        '',
+        'Thank you.'
+      ].join('\n');
+
+      clearCart();
+      window.location.assign(`https://wa.me/2348115474133?text=${encodeURIComponent(whatsappMessage)}`);
     } catch (error) {
       setOrderStatus({ type: 'error', message: getApiErrorMessage(error, 'Failed to complete order. Please check your details and try again.') });
     } finally {
@@ -292,7 +306,7 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
                   <span>Items Subtotal</span><span className="font-medium text-gray-800">₦{total.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-gray-500 text-sm mb-4">
-                  <span>Standard Delivery</span><span className="text-green-600 text-xs font-semibold bg-green-50 px-2 py-0.5 rounded-full">FREE</span>
+                  <span>Delivery fee</span><span className="text-gray-500 text-xs font-semibold">To be confirmed</span>
                 </div>
                 <div className="flex justify-between text-gray-900 font-extrabold text-xl border-t border-gray-100 pt-4 mb-6">
                   <span>Total Amount</span><span className="text-[#f68b1e]">₦{total.toLocaleString()}</span>

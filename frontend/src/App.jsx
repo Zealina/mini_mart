@@ -10,6 +10,7 @@ import Auth from './pages/Auth';
 import Cart from './pages/Cart'; 
 import Orders from './pages/Orders';
 import Settings from './pages/Settings';
+import About from './pages/About';
 
 export default function App() {
   // `user` lives in the shared in-memory auth store (see store/authStore.js),
@@ -186,6 +187,7 @@ export default function App() {
        
         
         <Route path="/settings" element={<Settings user={user} setUser={setUser} />} />
+        <Route path="/about" element={<About />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

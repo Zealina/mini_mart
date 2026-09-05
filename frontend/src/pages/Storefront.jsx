@@ -12,8 +12,6 @@ export default function Storefront({ user, handleLogout, products, categories, a
   const [searchQuery, setSearchQuery] = useState('');
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [viewProduct, setViewProduct] = useState(null);
-  const [isWelcomeOpen, setIsWelcomeOpen] = useState(true);
-
   const [currentSlide, setCurrentSlide] = useState(0);
 
   // Default fallback slides
@@ -57,17 +55,6 @@ export default function Storefront({ user, handleLogout, products, categories, a
     return () => clearInterval(timer);
   }, [slides.length]);
 
-  useEffect(() => {
-    if (!isWelcomeOpen) return undefined;
-
-    const handleEscape = (event) => {
-      if (event.key === 'Escape') setIsWelcomeOpen(false);
-    };
-
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isWelcomeOpen]);
-
   // Secure admin check based on actual user data
   const actualUser = user?.user || user;
   const isAdmin = actualUser && (actualUser.is_admin == 1 || actualUser.is_admin === true);
@@ -84,46 +71,6 @@ export default function Storefront({ user, handleLogout, products, categories, a
   return (
     <div className="min-h-screen bg-[#f1f1f2] font-sans text-[#282828] flex flex-col relative">
 
-      {isWelcomeOpen && (
-        <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm"
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setIsWelcomeOpen(false);
-          }}
-        >
-          <section
-            className="relative w-full max-w-md rounded-2xl bg-white p-7 text-center shadow-2xl"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="welcome-title"
-          >
-            <button
-              type="button"
-              onClick={() => setIsWelcomeOpen(false)}
-              className="absolute right-3 top-3 rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
-              aria-label="Close welcome message"
-            >
-              <X className="h-5 w-5" />
-            </button>
-            <ShoppingBag className="mx-auto mb-4 h-10 w-10 text-[#f68b1e]" />
-            <h1 id="welcome-title" className="mb-2 text-2xl font-bold text-gray-900">
-              Welcome to CEXPRESS MINIMART
-            </h1>
-            <p className="mb-6 text-sm leading-6 text-gray-600">
-              Your everyday essentials are just a few clicks away.
-            </p>
-            <button
-              type="button"
-              onClick={() => setIsWelcomeOpen(false)}
-              className="w-full rounded-lg bg-[#f68b1e] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#df7610]"
-            >
-              Start Shopping
-            </button>
-          </section>
-        </div>
-      )}
-      
       { }
       {isAdmin && (
         <div className="bg-green-200 text-green-900 text-xs font-bold py-1.5 px-4 flex justify-center items-center gap-2 tracking-wide">
@@ -263,6 +210,9 @@ export default function Storefront({ user, handleLogout, products, categories, a
             <p className="mt-1 max-w-2xl text-sm leading-5 md:text-base">
               Your trusted neighborhood source in Abuja for fresh foodstuff, groceries, and household essentials.
             </p>
+            <Link to="/about" className="mt-3 inline-flex rounded-lg bg-[#f68b1e] px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-[#df7610]">
+              More About Us
+            </Link>
           </div>
           
           {/* Slider Pagination Dots */}
@@ -401,6 +351,12 @@ export default function Storefront({ user, handleLogout, products, categories, a
       <footer className="bg-[#282828] text-white py-12 mt-auto">
         <div className="max-w-7xl mx-auto px-4 flex flex-col items-center text-center">
           <img src="/logo-circular.png" alt="CEXPRESS MINIMART" className="h-20 w-20 rounded-full mb-4 shadow-lg object-contain bg-white" />
+          <Link to="/about" className="mb-4 text-sm font-bold text-orange-300 transition-colors hover:text-white">More About Us</Link>
+          <div className="mb-5 flex items-center gap-5">
+            <a href="https://www.instagram.com/cexpressminimart?igsi=MW40b2RvM2h1anJrbw==" target="_blank" rel="noreferrer" aria-label="Instagram" className="text-gray-300 transition-colors hover:text-orange-300">Instagram</a>
+            <a href="https://www.facebook.com/profile.php?id=61583834015441" target="_blank" rel="noreferrer" aria-label="Facebook" className="text-gray-300 transition-colors hover:text-orange-300">Facebook</a>
+            <a href="https://www.tiktok.com/@c_express_minimart?_r=1&_t=ZS-99Fzjg3kLEG" target="_blank" rel="noreferrer" aria-label="TikTok" className="text-gray-300 transition-colors hover:text-orange-300">TikTok</a>
+          </div>
           <p className="text-gray-400 text-sm">© 2026 CEXPRESS MINIMART. All Rights Reserved.</p>
         </div>
       </footer>
