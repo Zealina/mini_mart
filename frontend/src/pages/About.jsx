@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Instagram, Facebook, Music2, ShoppingBag } from 'lucide-react';
+import { ArrowLeft, MapPin, Share2, ShoppingBag } from 'lucide-react';
 
 const products = [
   'Bags of rice',
@@ -133,9 +133,9 @@ export default function About() {
           <p className="mt-2 text-sm text-gray-400">Quality Products. Affordable Prices. Reliable Service.</p>
           <p className="mt-1 text-sm text-gray-400">Your trusted neighbourhood minimart for foodstuff, groceries, provisions and more.</p>
           <div className="mt-6 flex items-center gap-5">
-            <a href="https://www.instagram.com/cexpressminimart?igsi=MW40b2RvM2h1anJrbw==" target="_blank" rel="noreferrer" aria-label="Instagram" className="text-gray-300 transition-colors hover:text-orange-300"><Instagram className="h-5 w-5" /></a>
-            <a href="https://www.facebook.com/profile.php?id=61583834015441" target="_blank" rel="noreferrer" aria-label="Facebook" className="text-gray-300 transition-colors hover:text-orange-300"><Facebook className="h-5 w-5" /></a>
-            <a href="https://www.tiktok.com/@c_express_minimart?_r=1&_t=ZS-99Fzjg3kLEG" target="_blank" rel="noreferrer" aria-label="TikTok" className="text-gray-300 transition-colors hover:text-orange-300"><Music2 className="h-5 w-5" /></a>
+            <a href="https://www.instagram.com/cexpressminimart?igsi=MW40b2RvM2h1anJrbw==" target="_blank" rel="noreferrer" aria-label="Instagram" className="flex items-center gap-2 text-gray-300 transition-colors hover:text-orange-300"><Share2 className="h-5 w-5" /> Instagram</a>
+            <a href="https://www.facebook.com/profile.php?id=61583834015441" target="_blank" rel="noreferrer" aria-label="Facebook" className="flex items-center gap-2 text-gray-300 transition-colors hover:text-orange-300"><Share2 className="h-5 w-5" /> Facebook</a>
+            <a href="https://www.tiktok.com/@c_express_minimart?_r=1&_t=ZS-99Fzjg3kLEG" target="_blank" rel="noreferrer" aria-label="TikTok" className="flex items-center gap-2 text-gray-300 transition-colors hover:text-orange-300"><Share2 className="h-5 w-5" /> TikTok</a>
           </div>
         </div>
       </footer>
