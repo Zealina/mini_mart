@@ -221,7 +221,7 @@ export default function Orders({ user, products }) {
 
               <div className="bg-gray-50 p-4 rounded-xl text-center border border-gray-100">
                 <p className="text-sm text-gray-600 font-medium flex items-center justify-center gap-2">
-                  Payment Method: <span className="font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded border border-green-100">CASH ON DELIVERY</span>
+                  Payment Method: <span className="font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded border border-green-100">BANK TRANSFER</span>
                 </p>
               </div>
               
