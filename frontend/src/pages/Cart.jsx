@@ -71,6 +71,18 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  const getGpsMapLink = () => new Promise((resolve) => {
+    if (!navigator.geolocation) {
+      resolve('GPS Pin not provided');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => resolve(`https://maps.google.com/?q=${coords.latitude},${coords.longitude}`),
+      () => resolve('GPS Pin not provided')
+    );
+  });
+
   const handleCheckout = async () => {
     if (!user) {
       setOrderStatus({ type: 'error', message: 'You must be logged in to complete a checkout order.' });
@@ -119,16 +131,17 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
         .map(item => `- ${item.name} x${item.quantity}`)
         .join('\n');
       const orderReference = response.data?.id || response.data?.order_id || 'Pending confirmation';
+      const gpsMapLink = await getGpsMapLink();
       const whatsappMessage = [
-        'Hello C Express Minimart,',
+        'Hello Admin! I have ordered:',
+        itemSummary,
+        `Total: ₦${total.toLocaleString()}`,
+        'and made payment.',
         '',
-        'Payment for this order has been completed. Please contact me so we can discuss the delivery arrangements.',
+        `Delivery Address: ${deliveryAddress.trim()}`,
+        `Exact Map Pin: ${gpsMapLink}`,
         '',
         `Order ID: ${orderReference}`,
-        'Items ordered:',
-        itemSummary,
-        '',
-        `Delivery location: ${deliveryAddress.trim()}`,
         `Contact phone: ${contactPhone.trim()}`,
         '',
         'Thank you.'
@@ -221,11 +234,11 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
 
                   <div>
                     <label className="block text-xs font-bold text-gray-500 uppercase mb-2 flex items-center gap-1">
-                      <MapPin className="h-3 w-3" /> Street Address *
+                      <MapPin className="h-3 w-3" /> Delivery Address / Location Name *
                     </label>
-                    <textarea 
-                      required value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} placeholder="Enter house number, street, city..."
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#f68b1e] outline-none transition-all resize-none h-24"
+                    <input
+                      type="text" required value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} placeholder="Enter house number, street, city..."
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#f68b1e] outline-none transition-all"
                     />
                   </div>
                 </div>
