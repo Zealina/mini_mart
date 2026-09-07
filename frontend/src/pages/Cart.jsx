@@ -72,14 +72,24 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
   };
 
   const getGpsMapLink = () => new Promise((resolve) => {
+    const fallback = () => resolve('GPS Pin not provided');
+
     if (!navigator.geolocation) {
-      resolve('GPS Pin not provided');
+      fallback();
       return;
     }
 
+    const timeoutId = window.setTimeout(fallback, 5000);
     navigator.geolocation.getCurrentPosition(
-      ({ coords }) => resolve(`https://maps.google.com/?q=${coords.latitude},${coords.longitude}`),
-      () => resolve('GPS Pin not provided')
+      ({ coords }) => {
+        window.clearTimeout(timeoutId);
+        resolve(`https://maps.google.com/?q=${coords.latitude},${coords.longitude}`);
+      },
+      () => {
+        window.clearTimeout(timeoutId);
+        fallback();
+      },
+      { timeout: 5000, maximumAge: 300000 }
     );
   });
 
@@ -120,9 +130,7 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
       payload.append('phone', contactPhone);
       payload.append('receipt', receiptFile);
 
-      const response = await apiClient.post('/orders', payload, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const response = await apiClient.post('/orders', payload);
       
       // ✅ TRIGGER RELOAD: Instantly fetch updated inventory stocks
       if(triggerReload) triggerReload(); 
