@@ -19,6 +19,8 @@ class Order(BaseModel, Base):
     payment_proof_url = Column(String(255), nullable=True)
     invoice_url = Column(String(255), nullable=True)
     receipt_url = Column(String(255), nullable=True)
+    rider_id = Column(String(50), nullable=True)
+    signature_url = Column(String(255), nullable=True)
 
     user = relationship("User", back_populates="orders")
     order_items = relationship(
@@ -51,6 +53,8 @@ class Order(BaseModel, Base):
         order_dict['status'] = getattr(self, 'status', 'Pending')
         order_dict['payment_confirmed'] = order_dict['status'] == 'Paid'
         order_dict['payment_confirmed_by'] = order_dict.get('payment_confirmed_by')
+        order_dict['rider_id'] = getattr(self, 'rider_id', None)
+        order_dict['signature_url'] = getattr(self, 'signature_url', None)
         
         if hasattr(self, 'order_items') and self.order_items is not None:
             order_dict['order_items'] = [item.to_dict() for item in self.order_items]

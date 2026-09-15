@@ -530,7 +530,13 @@ def create_order():
         if not user:
             return jsonify({"message": "user for order not found"}), 404
         send_order_confirmation_email(order, user)
-        send_owner_order_email(order)
+        super_admin_emails = [
+            admin.email
+            for admin in UserRepo.all()
+            if getattr(admin, "is_super_admin", False)
+            and getattr(admin, "email", None)
+        ]
+        send_owner_order_email(order, super_admin_emails or None)
     except Exception as e:
         current_app.logger.error(f"Failed to generate invoice for order {order.id}: {e}")
     return jsonify(order.to_dict()), 201

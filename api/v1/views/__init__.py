@@ -11,3 +11,4 @@ from api.v1.views.categories import *
 from api.v1.views.orders import *
 from api.v1.views.auth import *
 from api.v1.views.carousel_images import *
+from api.v1.views.dispatch import *

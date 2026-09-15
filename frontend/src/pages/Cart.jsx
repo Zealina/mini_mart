@@ -12,7 +12,7 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
   const [orderStatus, setOrderStatus] = useState({ type: '', message: '' });
   
   const [deliveryAddress, setDeliveryAddress] = useState(user?.address || '');
-  const [contactPhone, setContactPhone] = useState(user?.whatsapp_number || user?.phone_number || '');
+  const [contactPhone, setContactPhone] = useState(user?.phone_number || '');
 
   const [storeSettings, setStoreSettings] = useState(null);
 
@@ -71,28 +71,6 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const getGpsMapLink = () => new Promise((resolve) => {
-    const fallback = () => resolve('GPS Pin not provided');
-
-    if (!navigator.geolocation) {
-      fallback();
-      return;
-    }
-
-    const timeoutId = window.setTimeout(fallback, 5000);
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        window.clearTimeout(timeoutId);
-        resolve(`https://maps.google.com/?q=${coords.latitude},${coords.longitude}`);
-      },
-      () => {
-        window.clearTimeout(timeoutId);
-        fallback();
-      },
-      { timeout: 5000, maximumAge: 300000 }
-    );
-  });
-
   const handleCheckout = async () => {
     if (!user) {
       setOrderStatus({ type: 'error', message: 'You must be logged in to complete a checkout order.' });
@@ -130,33 +108,13 @@ export default function Cart({ cart, clearCart, updateQuantity, removeFromCart, 
       payload.append('phone', contactPhone);
       payload.append('receipt', receiptFile);
 
-      const response = await apiClient.post('/orders', payload);
+      await apiClient.post('/orders', payload);
       
       // ✅ TRIGGER RELOAD: Instantly fetch updated inventory stocks
       if(triggerReload) triggerReload(); 
 
-      const itemSummary = cart
-        .map(item => `- ${item.name} x${item.quantity}`)
-        .join('\n');
-      const orderReference = response.data?.id || response.data?.order_id || 'Pending confirmation';
-      const gpsMapLink = await getGpsMapLink();
-      const whatsappMessage = [
-        'Hello Admin! I have ordered:',
-        itemSummary,
-        `Total: ₦${total.toLocaleString()}`,
-        'and made payment.',
-        '',
-        `Delivery Address: ${deliveryAddress.trim()}`,
-        `Exact Map Pin: ${gpsMapLink}`,
-        '',
-        `Order ID: ${orderReference}`,
-        `Contact phone: ${contactPhone.trim()}`,
-        '',
-        'Thank you.'
-      ].join('\n');
-
       clearCart();
-      window.location.assign(`https://wa.me/2348115474133?text=${encodeURIComponent(whatsappMessage)}`);
+      setOrderStatus({ type: 'success', message: 'Order placed successfully. Admin has been notified by email.' });
     } catch (error) {
       setOrderStatus({ type: 'error', message: getApiErrorMessage(error, 'Failed to complete order. Please check your details and try again.') });
     } finally {

@@ -65,9 +65,13 @@ def send_email(to_email, subject, html_content, attachments=None):
         name=STORE_NAME
     )
 
+    recipients = [to_email] if isinstance(to_email, str) else list(to_email or [])
+    if not recipients:
+        raise ValueError("at least one email recipient is required")
+
     email_kwargs = dict(
         sender=sender,
-        to=[{"email": to_email}],
+        to=[{"email": email} for email in recipients],
         subject=subject,
         html_content=html_content
     )
@@ -554,11 +558,12 @@ def send_receipt_email(order, user):
     )
 
 
-def send_owner_order_email(order):
+def send_owner_order_email(order, recipient_emails=None):
 
-    if not OWNER_EMAIL:
+    recipients = recipient_emails or ([OWNER_EMAIL] if OWNER_EMAIL else [])
+    if not recipients:
         raise RuntimeError(
-            "OWNER_EMAIL is not configured in the environment"
+            "no super-admin recipients or OWNER_EMAIL are configured"
         )
 
     customer = order.user
@@ -665,6 +670,16 @@ def send_owner_order_email(order):
             <strong>Email:</strong>
             {customer.email}
 
+            <br>
+
+            <strong>Contact phone:</strong>
+            {getattr(order, 'contact_phone', None) or 'Not provided'}
+
+            <br>
+
+            <strong>Delivery address:</strong>
+            {getattr(order, 'delivery_address', None) or 'Not provided'}
+
         </div>
 
         {payment_proof_html}
@@ -735,7 +750,7 @@ def send_owner_order_email(order):
     attachments = [payment_proof_attachment] if payment_proof_attachment else None
 
     return send_email(
-        OWNER_EMAIL,
+        recipients,
         f"New C_Express Minimart Order #{order.id}",
         email_template(content),
         attachments=attachments

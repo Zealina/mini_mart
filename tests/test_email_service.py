@@ -50,6 +50,8 @@ def make_order(payment_proof_url=None, invoice_url=None, receipt_url=None):
         payment_proof_url=payment_proof_url,
         invoice_url=invoice_url,
         receipt_url=receipt_url,
+        contact_phone="08012345678",
+        delivery_address="12 Market Street",
     )
 
 
@@ -218,6 +220,8 @@ class TestOwnerOrderEmail(EmailServiceTestCase):
             self.assertEqual(call_args.to[0]["email"], os.environ["OWNER_EMAIL"])
             self.assertIn(order.user.first_name, call_args.html_content)
             self.assertIn(order.user.email, call_args.html_content)
+            self.assertIn(order.contact_phone, call_args.html_content)
+            self.assertIn(order.delivery_address, call_args.html_content)
             self.assertIn("attached to this email", call_args.html_content)
 
             self.assertTrue(hasattr(call_args, "attachment"))
@@ -237,6 +241,19 @@ class TestOwnerOrderEmail(EmailServiceTestCase):
 
         call_args = self.mock_api_instance.send_transac_email.call_args[0][0]
         self.assertIn("No payment proof was attached", call_args.html_content)
+
+    def test_send_owner_order_email_to_all_super_admins(self):
+        order = make_order()
+        recipients = ["first-admin@example.com", "second-admin@example.com"]
+
+        result = email_service.send_owner_order_email(order, recipients)
+
+        self.assertTrue(result)
+        call_args = self.mock_api_instance.send_transac_email.call_args[0][0]
+        self.assertEqual(
+            [recipient["email"] for recipient in call_args.to],
+            recipients,
+        )
 
     def test_send_owner_order_email_raises_without_owner_email(self):
         order = make_order()
