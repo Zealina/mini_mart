@@ -30,6 +30,7 @@ def make_user(**overrides):
         first_name="Ada",
         name="Ada Obi",
         email="ada@example.com",
+        phone_number="08099999999",
     )
     defaults.update(overrides)
     return SimpleNamespace(**defaults)
