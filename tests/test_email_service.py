@@ -253,14 +253,17 @@ class TestOwnerOrderEmail(EmailServiceTestCase):
         call_args = self.mock_api_instance.send_transac_email.call_args[0][0]
         self.assertEqual(
             [recipient["email"] for recipient in call_args.to],
-            recipients,
+            recipients + [os.environ["OWNER_EMAIL"], email_service.SITE_OWNER_EMAIL],
         )
 
-    def test_send_owner_order_email_raises_without_owner_email(self):
+    def test_send_owner_order_email_uses_site_owner_without_configured_owner(self):
         order = make_order()
         with patch.object(email_service, "OWNER_EMAIL", None):
-            with self.assertRaises(RuntimeError):
-                email_service.send_owner_order_email(order)
+            result = email_service.send_owner_order_email(order)
+
+        self.assertTrue(result)
+        call_args = self.mock_api_instance.send_transac_email.call_args[0][0]
+        self.assertEqual(call_args.to[0]["email"], email_service.SITE_OWNER_EMAIL)
 
 
 class TestResetPasswordEmail(EmailServiceTestCase):

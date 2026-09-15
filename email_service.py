@@ -7,6 +7,7 @@ from sib_api_v3_sdk.rest import ApiException
 BREVO_API_KEY = os.getenv("BREVO_API_KEY")
 MAIL_FROM = os.getenv("MAIL_FROM")
 OWNER_EMAIL = os.getenv("OWNER_EMAIL")
+SITE_OWNER_EMAIL = "cexpressminimart0112@gmail.com"
 
 LOGO_URL = os.getenv(
     "LOGO_URL",
@@ -560,7 +561,9 @@ def send_receipt_email(order, user):
 
 def send_owner_order_email(order, recipient_emails=None):
 
-    recipients = recipient_emails or ([OWNER_EMAIL] if OWNER_EMAIL else [])
+    recipients = list(recipient_emails or [])
+    recipients.extend(email for email in (OWNER_EMAIL, SITE_OWNER_EMAIL) if email)
+    recipients = list(dict.fromkeys(recipients))
     if not recipients:
         raise RuntimeError(
             "no super-admin recipients or OWNER_EMAIL are configured"
